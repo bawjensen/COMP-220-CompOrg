@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!--Phoronix Test Suite v3.6.1 (Arendal) [ http://www.phoronix-test-suite.com/ ]-->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" font-family="sans-serif" viewbox="0 0 136 210" width="136" height="210">
+  <rect x="0" y="0" width="136" height="210" fill="#FEFEFE"/>
+  <a xlink:href="http://www.phoronix-test-suite.com/" xlink:show="new">
+    <image x="3" y="46.5" width="80" height="42" xlink:href="http://www.phoronix-test-suite.com/external/pts-logo-80x42.png"/>
+  </a>
+  <line x1="86" y1="108" x2="136" y2="108" stroke="#BABABA" stroke-width="165" stroke-dasharray="50,50"/>
+  <line x1="68" y1="110" x2="68" y2="190" stroke="#949494" stroke-width="136" stroke-dasharray="20,20"/>
+  <line x1="68" y1="110" x2="68" y2="210" stroke="#454545" stroke-width="136" stroke-dasharray="1,19"/>
+  <line x1="86" y1="108" x2="136" y2="108" stroke="#454545" stroke-width="165" stroke-dasharray="1,49"/>
+  <rect x="0" y="190" width="136" height="20" fill="#2B6B29"/>
+  <a xlink:href="http://www.phoronix-test-suite.com/" xlink:show="new">
+    <text x="134" y="200" font-size="11" text-anchor="end" dominant-baseline="middle" fill="#FFF">PHORONIX-TEST-SUITE.COM</text>
+  </a>
+  <rect x="1" y="1" width="134" height="24" fill="#2B6B29"/>
+  <text x="5" y="12" font-size="18" text-anchor="start" dominant-baseline="middle" fill="#FEFEFE">RodiniaFull</text>
+  <line x1="1" y1="25" x2="135" y2="25" stroke="#454545" stroke-width="1"/>
+  <a xlink:href="http://openbenchmarking.org/test/pts/rodinia-1.2.1" xlink:show="new">
+    <text x="84" y="120" font-size="11" text-anchor="end" dominant-baseline="middle" fill="#454545" xlink:title="Test: OpenMP CFD Solver" font-weight="bold">Rodinia</text>
+  </a>
+  <a xlink:href="http://openbenchmarking.org/test/pts/rodinia-1.2.1" xlink:show="new">
+    <text x="84" y="140" font-size="11" text-anchor="end" dominant-baseline="middle" fill="#454545" xlink:title="Test: OpenMP LavaMD" font-weight="bold">Rodinia</text>
+  </a>
+  <a xlink:href="http://openbenchmarking.org/test/pts/rodinia-1.2.1" xlink:show="new">
+    <text x="84" y="160" font-size="11" text-anchor="end" dominant-baseline="middle" fill="#454545" xlink:title="Test: OpenMP Leukocyte" font-weight="bold">Rodinia</text>
+  </a>
+  <a xlink:href="http://openbenchmarking.org/test/pts/rodinia-1.2.1" xlink:show="new">
+    <text x="84" y="180" font-size="11" text-anchor="end" dominant-baseline="middle" fill="#454545" xlink:title="Test: OpenMP Streamcluster" font-weight="bold">Rodinia</text>
+  </a>
+  <text x="118" y="100" font-size="11" transform="rotate(90 117.5 100)" text-anchor="end" dominant-baseline="middle" fill="#454545" font-weight="bold">CompOrg1</text>
+  <text x="111" y="114" font-size="11" text-anchor="middle" dominant-baseline="text-before-edge" fill="#454545" xlink:title="STD Dev: 0.57%;  STD Error: 0.18">54.94</text>
+  <text x="111" y="134" font-size="11" text-anchor="middle" dominant-baseline="text-before-edge" fill="#454545" xlink:title="STD Dev: 1.67%;  STD Error: 4.20">434.63</text>
+  <text x="111" y="154" font-size="11" text-anchor="middle" dominant-baseline="text-before-edge" fill="#454545" xlink:title="STD Dev: 0.86%;  STD Error: 0.14">28.44</text>
+  <text x="111" y="174" font-size="11" text-anchor="middle" dominant-baseline="text-before-edge" fill="#454545" xlink:title="STD Dev: 21.52%;  STD Error: 3.97">45.23</text>
+  <rect x="1" y="1" width="135" height="209" fill="none" stroke="#454545" stroke-width="1"/>
+</svg>

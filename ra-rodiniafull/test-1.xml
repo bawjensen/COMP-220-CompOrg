@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!--Phoronix Test Suite v3.6.1 (Arendal)-->
+<?xml-stylesheet type="text/xsl" href="pts-results-viewer.xsl"?>
+<PhoronixTestSuite>
+  <Generated>
+    <Title>RodiniaFull</Title>
+    <LastModified>2014-02-11 20:08:48</LastModified>
+    <TestClient>Phoronix Test Suite v3.6.1 (Arendal)</TestClient>
+    <Description>2 x Intel Xeon E5645 testing with a Intel S5520HC and Matrox s MGA G200e [Pilot] (SEP1) on Ubuntu 12.04 via the Phoronix Test Suite.</Description>
+  </Generated>
+  <System>
+    <Identifier>CompOrg1</Identifier>
+    <Hardware>Processor: 2 x Intel Xeon E5645 @ 2.40GHz (24 Cores), Motherboard: Intel S5520HC, Chipset: Intel 5520 I/O + ICH10R, Memory: 49152MB, Disk: 7996GB MR9261-8i, Graphics: Matrox s MGA G200e [Pilot] (SEP1), Network: Intel 82575EB Gigabit Connection</Hardware>
+    <Software>OS: Ubuntu 12.04, Kernel: 3.8.0-29-generic (x86_64), Display Driver: matrox, Compiler: GCC 4.6, File-System: ext4</Software>
+    <User>NLP</User>
+    <TimeStamp>2014-02-11 20:08:48</TimeStamp>
+    <TestClientVersion>3.6.1</TestClientVersion>
+    <Notes></Notes>
+  </System>
+  <Result>
+    <Identifier>pts/rodinia-1.2.1</Identifier>
+    <Title>Rodinia</Title>
+    <AppVersion>2.4</AppVersion>
+    <Arguments>OMP_CFD</Arguments>
+    <Description>Test: OpenMP CFD Solver</Description>
+    <Scale>Seconds</Scale>
+    <Proportion>LIB</Proportion>
+    <DisplayFormat>BAR_GRAPH</DisplayFormat>
+    <Data>
+      <Entry>
+        <Identifier>CompOrg1</Identifier>
+        <Value>54.94</Value>
+        <RawString>55.239732980728:54.953342914581:54.617254018784</RawString>
+      </Entry>
+    </Data>
+  </Result>
+  <Result>
+    <Identifier>pts/rodinia-1.2.1</Identifier>
+    <Title>Rodinia</Title>
+    <AppVersion>2.4</AppVersion>
+    <Arguments>OMP_LAVAMD</Arguments>
+    <Description>Test: OpenMP LavaMD</Description>
+    <Scale>Seconds</Scale>
+    <Proportion>LIB</Proportion>
+    <DisplayFormat>BAR_GRAPH</DisplayFormat>
+    <Data>
+      <Entry>
+        <Identifier>CompOrg1</Identifier>
+        <Value>434.63</Value>
+        <RawString>429.57484197617:431.34003901482:442.9632461071</RawString>
+      </Entry>
+    </Data>
+  </Result>
+  <Result>
+    <Identifier>pts/rodinia-1.2.1</Identifier>
+    <Title>Rodinia</Title>
+    <AppVersion>2.4</AppVersion>
+    <Arguments>OMP_LEUKOCYTE</Arguments>
+    <Description>Test: OpenMP Leukocyte</Description>
+    <Scale>Seconds</Scale>
+    <Proportion>LIB</Proportion>
+    <DisplayFormat>BAR_GRAPH</DisplayFormat>
+    <Data>
+      <Entry>
+        <Identifier>CompOrg1</Identifier>
+        <Value>28.44</Value>
+        <RawString>28.716878890991:28.293438911438:28.295180082321</RawString>
+      </Entry>
+    </Data>
+  </Result>
+  <Result>
+    <Identifier>pts/rodinia-1.2.1</Identifier>
+    <Title>Rodinia</Title>
+    <AppVersion>2.4</AppVersion>
+    <Arguments>OMP_STREAMCLUSTER</Arguments>
+    <Description>Test: OpenMP Streamcluster</Description>
+    <Scale>Seconds</Scale>
+    <Proportion>LIB</Proportion>
+    <DisplayFormat>BAR_GRAPH</DisplayFormat>
+    <Data>
+      <Entry>
+        <Identifier>CompOrg1</Identifier>
+        <Value>45.23</Value>
+        <RawString>43.130001068115:47.579388856888:26.603849887848:49.865471124649:52.784828186035:51.398680925369</RawString>
+      </Entry>
+    </Data>
+  </Result>
+</PhoronixTestSuite>

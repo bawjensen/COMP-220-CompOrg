@@ -1,0 +1,35 @@
+Module                  Size  Used by
+drm                   287564  0 
+dm_crypt               23051  1 
+coretemp               13596  0 
+kvm_intel             137899  0 
+kvm                   455932  1 kvm_intel
+joydev                 17613  0 
+ioatdma                43624  16 
+i7core_edac            24565  0 
+microcode              23017  0 
+edac_core              62724  2 i7core_edac
+mac_hid                13253  0 
+gpio_ich               13526  0 
+lpc_ich                17144  0 
+lp                     17799  0 
+parport                46562  1 lp
+ext2                   73755  1 
+hid_generic            12540  0 
+usbhid                 47346  0 
+hid                   105549  2 hid_generic,usbhid
+ses                    17417  0 
+enclosure              15283  1 ses
+ghash_clmulni_intel    13259  0 
+aesni_intel            55495  85 
+ablk_helper            13597  1 aesni_intel
+cryptd                 20501  4 ghash_clmulni_intel,aesni_intel,ablk_helper
+lrw                    13294  1 aesni_intel
+aes_x86_64             17255  1 aesni_intel
+xts                    12922  1 aesni_intel
+gf128mul               14951  2 lrw,xts
+megaraid_sas           83002  2 
+igb                   136166  0 
+dca                    15232  2 ioatdma,igb
+ptp                    18668  1 igb
+pps_core               14080  1 ptp
