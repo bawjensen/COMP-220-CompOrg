@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<!--Phoronix Test Suite v4.6.0 (Utsira)-->
+<?xml-stylesheet type="text/xsl" href="pts-results-viewer.xsl"?>
+<PhoronixTestSuite>
+  <Generated>
+    <Title>RodiniaFull</Title>
+    <LastModified>2014-02-11 00:09:36</LastModified>
+    <TestClient>Phoronix Test Suite v4.6.0 (Utsira)</TestClient>
+    <Description>Intel Core i5-2450M testing with a HP 1837 and Intel 2nd Generation Core Family IGP 512MB on Ubuntu 13.10 via the Phoronix Test Suite.</Description>
+  </Generated>
+  <System>
+    <Identifier>CompOrg3</Identifier>
+    <Hardware>Processor: Intel Core i5-2450M @ 2.50GHz (4 Cores), Motherboard: HP 1837, Chipset: Intel 2nd Generation Core Family DRAM, Memory: 6144MB, Disk: 750GB TOSHIBA MK7575GS + 32GB LITEONIT LMT-32L, Graphics: Intel 2nd Generation Core Family IGP 512MB, Audio: IDT 92HD91BXX, Network: Realtek RTL8111/8168/8411 + Ralink Device 539a</Hardware>
+    <Software>OS: Ubuntu 13.10, Kernel: 3.11.0-15-generic (x86_64), Desktop: Unity 7.1.2, Display Server: X Server 1.14.5, Display Driver: intel 2.99.904, OpenGL: 3.1 Mesa 9.2.1, Compiler: GCC 4.8, File-System: ext4, Screen Resolution: 1366x768</Software>
+    <User>bryan</User>
+    <TimeStamp>2014-02-11 00:09:36</TimeStamp>
+    <TestClientVersion>4.6.0</TestClientVersion>
+    <Notes></Notes>
+    <JSON>{"compiler-configuration":"--build=x86_64-linux-gnu --disable-browser-plugin --disable-werror --enable-checking=release --enable-clocale=gnu --enable-gnu-unique-object --enable-gtk-cairo --enable-java-awt=gtk --enable-java-home --enable-languages=c,c++,java,go,d,fortran,objc,obj-c++ --enable-libstdcxx-debug --enable-libstdcxx-time=yes --enable-multiarch --enable-nls --enable-objc-gc --enable-plugin --enable-shared --enable-threads=posix --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-abi=m64 --with-arch-32=i686 --with-arch-directory=amd64 --with-ecj-jar=\/usr\/share\/java\/eclipse-ecj.jar --with-java-home=\/usr\/lib\/jvm\/java-1.5.0-gcj-4.8-amd64\/jre --with-jvm-jar-dir=\/usr\/lib\/jvm-exports\/java-1.5.0-gcj-4.8-amd64 --with-jvm-root-dir=\/usr\/lib\/jvm\/java-1.5.0-gcj-4.8-amd64 --with-multilib-list=m32,m64,mx32 --with-tune=generic -v","cpu-scaling-governor":"acpi- freq ondemand"}</JSON>
+  </System>
+  <Result>
+    <Identifier>pts/rodinia-1.2.1</Identifier>
+    <Title>Rodinia</Title>
+    <AppVersion>2.4</AppVersion>
+    <Arguments>OMP_LAVAMD</Arguments>
+    <Description>Test: OpenMP LavaMD</Description>
+    <Scale>Seconds</Scale>
+    <Proportion>LIB</Proportion>
+    <DisplayFormat>BAR_GRAPH</DisplayFormat>
+    <Data>
+      <Entry>
+        <Identifier>CompOrg3</Identifier>
+        <Value>1776.29</Value>
+        <RawString>1790.0086510181:1771.0776281357:1767.7902889252</RawString>
+        <JSON>{"compiler-options":{"compiler-type":"CXX","compiler":"g++","compiler-options":"-O3 -fopenmp"}}</JSON>
+      </Entry>
+    </Data>
+  </Result>
+  <Result>
+    <Identifier>pts/rodinia-1.2.1</Identifier>
+    <Title>Rodinia</Title>
+    <AppVersion>2.4</AppVersion>
+    <Arguments>OMP_LEUKOCYTE</Arguments>
+    <Description>Test: OpenMP Leukocyte</Description>
+    <Scale>Seconds</Scale>
+    <Proportion>LIB</Proportion>
+    <DisplayFormat>BAR_GRAPH</DisplayFormat>
+    <Data>
+      <Entry>
+        <Identifier>CompOrg3</Identifier>
+        <Value>98.98</Value>
+        <RawString>99.128644943237:98.904422044754:98.90119099617</RawString>
+        <JSON>{"compiler-options":{"compiler-type":"CXX","compiler":"g++","compiler-options":"-O3 -fopenmp"}}</JSON>
+      </Entry>
+    </Data>
+  </Result>
+  <Result>
+    <Identifier>pts/rodinia-1.2.1</Identifier>
+    <Title>Rodinia</Title>
+    <AppVersion>2.4</AppVersion>
+    <Arguments>OMP_CFD</Arguments>
+    <Description>Test: OpenMP CFD Solver</Description>
+    <Scale>Seconds</Scale>
+    <Proportion>LIB</Proportion>
+    <DisplayFormat>BAR_GRAPH</DisplayFormat>
+    <Data>
+      <Entry>
+        <Identifier>CompOrg3</Identifier>
+        <Value>230.75</Value>
+        <RawString>231.35823488235:230.77181506157:230.11926722527</RawString>
+        <JSON>{"compiler-options":{"compiler-type":"CXX","compiler":"g++","compiler-options":"-O3 -fopenmp"}}</JSON>
+      </Entry>
+    </Data>
+  </Result>
+  <Result>
+    <Identifier>pts/rodinia-1.2.1</Identifier>
+    <Title>Rodinia</Title>
+    <AppVersion>2.4</AppVersion>
+    <Arguments>OMP_STREAMCLUSTER</Arguments>
+    <Description>Test: OpenMP Streamcluster</Description>
+    <Scale>Seconds</Scale>
+    <Proportion>LIB</Proportion>
+    <DisplayFormat>BAR_GRAPH</DisplayFormat>
+    <Data>
+      <Entry>
+        <Identifier>CompOrg3</Identifier>
+        <Value>60.98</Value>
+        <RawString>61.012583017349:60.996649026871:60.94261598587</RawString>
+        <JSON>{"compiler-options":{"compiler-type":"CXX","compiler":"g++","compiler-options":"-O3 -fopenmp"}}</JSON>
+      </Entry>
+    </Data>
+  </Result>
+</PhoronixTestSuite>

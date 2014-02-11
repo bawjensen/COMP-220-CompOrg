@@ -1,0 +1,152 @@
+Slot:	00:00.0
+Class:	Host bridge [0600]
+Vendor:	Intel Corporation [8086]
+Device:	2nd Generation Core Processor Family DRAM Controller [0104]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1837]
+Rev:	09
+
+Slot:	00:01.0
+Class:	PCI bridge [0604]
+Vendor:	Intel Corporation [8086]
+Device:	Xeon E3-1200/2nd Generation Core Processor Family PCI Express Root Port [0101]
+Rev:	09
+Driver:	pcieport
+
+Slot:	00:02.0
+Class:	VGA compatible controller [0300]
+Vendor:	Intel Corporation [8086]
+Device:	2nd Generation Core Processor Family Integrated Graphics Controller [0126]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1837]
+Rev:	09
+Driver:	i915
+
+Slot:	00:14.0
+Class:	USB controller [0c03]
+Vendor:	Intel Corporation [8086]
+Device:	7 Series/C210 Series Chipset Family USB xHCI Host Controller [1e31]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1837]
+Rev:	04
+ProgIf:	30
+Driver:	xhci_hcd
+
+Slot:	00:16.0
+Class:	Communication controller [0780]
+Vendor:	Intel Corporation [8086]
+Device:	7 Series/C210 Series Chipset Family MEI Controller #1 [1e3a]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1837]
+Rev:	04
+Driver:	mei_me
+
+Slot:	00:1a.0
+Class:	USB controller [0c03]
+Vendor:	Intel Corporation [8086]
+Device:	7 Series/C210 Series Chipset Family USB Enhanced Host Controller #2 [1e2d]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1837]
+Rev:	04
+ProgIf:	20
+Driver:	ehci-pci
+
+Slot:	00:1b.0
+Class:	Audio device [0403]
+Vendor:	Intel Corporation [8086]
+Device:	7 Series/C210 Series Chipset Family High Definition Audio Controller [1e20]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1837]
+Rev:	04
+Driver:	snd_hda_intel
+
+Slot:	00:1c.0
+Class:	PCI bridge [0604]
+Vendor:	Intel Corporation [8086]
+Device:	7 Series/C210 Series Chipset Family PCI Express Root Port 1 [1e10]
+Rev:	c4
+Driver:	pcieport
+
+Slot:	00:1c.1
+Class:	PCI bridge [0604]
+Vendor:	Intel Corporation [8086]
+Device:	7 Series/C210 Series Chipset Family PCI Express Root Port 2 [1e12]
+Rev:	c4
+Driver:	pcieport
+
+Slot:	00:1c.2
+Class:	PCI bridge [0604]
+Vendor:	Intel Corporation [8086]
+Device:	7 Series/C210 Series Chipset Family PCI Express Root Port 3 [1e14]
+Rev:	c4
+Driver:	pcieport
+
+Slot:	00:1c.5
+Class:	PCI bridge [0604]
+Vendor:	Intel Corporation [8086]
+Device:	7 Series/C210 Series Chipset Family PCI Express Root Port 6 [1e1a]
+Rev:	c4
+Driver:	pcieport
+
+Slot:	00:1d.0
+Class:	USB controller [0c03]
+Vendor:	Intel Corporation [8086]
+Device:	7 Series/C210 Series Chipset Family USB Enhanced Host Controller #1 [1e26]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1837]
+Rev:	04
+ProgIf:	20
+Driver:	ehci-pci
+
+Slot:	00:1f.0
+Class:	ISA bridge [0601]
+Vendor:	Intel Corporation [8086]
+Device:	HM77 Express Chipset LPC Controller [1e57]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1837]
+Rev:	04
+Driver:	lpc_ich
+
+Slot:	00:1f.2
+Class:	RAID bus controller [0104]
+Vendor:	Intel Corporation [8086]
+Device:	82801 Mobile SATA Controller [RAID mode] [282a]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1837]
+Rev:	04
+Driver:	ahci
+
+Slot:	00:1f.3
+Class:	SMBus [0c05]
+Vendor:	Intel Corporation [8086]
+Device:	7 Series/C210 Series Chipset Family SMBus Controller [1e22]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1837]
+Rev:	04
+
+Slot:	01:00.0
+Class:	VGA compatible controller [0300]
+Vendor:	NVIDIA Corporation [10de]
+Device:	GF108M [GeForce GT 630M] [0de9]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1837]
+Rev:	a1
+Driver:	nouveau
+
+Slot:	08:00.0
+Class:	Network controller [0280]
+Vendor:	Ralink corp. [1814]
+Device:	Device [539a]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1839]
+Driver:	rt2800pci
+
+Slot:	0a:00.0
+Class:	Ethernet controller [0200]
+Vendor:	Realtek Semiconductor Co., Ltd. [10ec]
+Device:	RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller [8168]
+SVendor:	Hewlett-Packard Company [103c]
+SDevice:	Device [1837]
+Rev:	06
+Driver:	r8169
+

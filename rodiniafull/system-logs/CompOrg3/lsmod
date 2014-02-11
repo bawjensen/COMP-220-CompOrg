@@ -1,0 +1,75 @@
+Module                  Size  Used by
+parport_pc             32701  0 
+ppdev                  17671  0 
+rfcomm                 69130  0 
+bnep                   19704  2 
+bluetooth             372041  10 bnep,rfcomm
+joydev                 17377  0 
+snd_hda_codec_hdmi     41117  1 
+snd_hda_codec_idt      50341  1 
+x86_pkg_temp_thermal    14162  0 
+intel_powerclamp       14705  0 
+coretemp               13435  0 
+kvm                   431720  0 
+crct10dif_pclmul       14289  0 
+crc32_pclmul           13113  0 
+ghash_clmulni_intel    13259  0 
+aesni_intel            55624  1 
+aes_x86_64             17131  1 aesni_intel
+lrw                    13286  1 aesni_intel
+gf128mul               14951  1 lrw
+glue_helper            13990  1 aesni_intel
+ablk_helper            13597  1 aesni_intel
+cryptd                 20359  3 ghash_clmulni_intel,aesni_intel,ablk_helper
+hp_wmi                 14062  0 
+sparse_keymap          13948  1 hp_wmi
+uvcvideo               80885  0 
+videobuf2_vmalloc      13216  1 uvcvideo
+videobuf2_memops       13362  1 videobuf2_vmalloc
+videobuf2_core         40499  1 uvcvideo
+videodev              133509  2 uvcvideo,videobuf2_core
+snd_hda_intel          48171  3 
+psmouse                97655  0 
+microcode              23576  0 
+snd_hda_codec         188738  3 snd_hda_codec_hdmi,snd_hda_codec_idt,snd_hda_intel
+arc4                   12608  2 
+snd_hwdep              13602  1 snd_hda_codec
+snd_pcm               102033  3 snd_hda_codec_hdmi,snd_hda_codec,snd_hda_intel
+rt2800pci              18719  0 
+snd_page_alloc         18710  2 snd_pcm,snd_hda_intel
+rt2800lib              79992  1 rt2800pci
+rt2x00pci              13287  1 rt2800pci
+snd_seq_midi           13324  0 
+rt2x00mmio             13603  1 rt2800pci
+serio_raw              13413  0 
+snd_seq_midi_event     14899  1 snd_seq_midi
+rt2x00lib              55362  4 rt2x00pci,rt2800lib,rt2800pci,rt2x00mmio
+snd_rawmidi            30095  1 snd_seq_midi
+mac80211              597268  3 rt2x00lib,rt2x00pci,rt2800lib
+snd_seq                61560  2 snd_seq_midi_event,snd_seq_midi
+snd_seq_device         14497  3 snd_seq,snd_rawmidi,snd_seq_midi
+cfg80211              480503  2 mac80211,rt2x00lib
+lpc_ich                21080  0 
+snd_timer              29433  2 snd_pcm,snd_seq
+eeprom_93cx6           13344  1 rt2800pci
+crc_ccitt              12707  1 rt2800lib
+snd                    69141  17 snd_hwdep,snd_timer,snd_hda_codec_hdmi,snd_hda_codec_idt,snd_pcm,snd_seq,snd_rawmidi,snd_hda_codec,snd_hda_intel,snd_seq_device,snd_seq_midi
+soundcore              12680  1 snd
+nouveau               943717  1 
+i915                  661261  3 
+mxm_wmi                13021  1 nouveau
+ttm                    84169  1 nouveau
+video                  19318  2 i915,nouveau
+wmi                    19070  3 hp_wmi,mxm_wmi,nouveau
+mei_me                 18421  0 
+drm_kms_helper         52710  2 i915,nouveau
+mei                    77782  1 mei_me
+drm                   297056  7 ttm,i915,drm_kms_helper,nouveau
+mac_hid                13205  0 
+i2c_algo_bit           13413  2 i915,nouveau
+lp                     17759  0 
+parport                42299  3 lp,ppdev,parport_pc
+r8169                  67581  0 
+ahci                   25819  2 
+libahci                31928  1 ahci
+mii                    13934  1 r8169
