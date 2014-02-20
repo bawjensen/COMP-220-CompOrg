@@ -1,0 +1,34 @@
+#----------------------------------------------------------------------------#
+# example6.a
+#
+# Joe Schmoe
+# Purpose: how to loop
+# Input:   none
+# Output:  some counting integers
+#----------------------------------------------------------------------------#
+	.data
+outstr: .asciiz "Values are: "
+endl:	.asciiz "\n"
+#----------------------------------------------------------------------------#
+	.text
+	.globl main
+main:
+	li 	$t0, 1          # val
+	li	$t1, 5          # num
+	li	$t2, 1          # const 1
+loop:
+	beq	$t0, $t1, done  # while
+	add	$t0, $t0, $t2
+
+	li	$v0, 1
+	move 	$a0, $t0
+	syscall
+	li	$v0, 4
+	la	$a0, endl
+	syscall
+	j	loop            # loop back up
+
+done:
+	li	$v0, 10		
+	syscall			
+#----------------------------------------------------------------------------#
