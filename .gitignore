@@ -1,2 +1,2 @@
 # Mac OSX file ignoring
-*DS_Store
+*.DS_Store
