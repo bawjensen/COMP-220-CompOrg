@@ -1,3 +1,18 @@
+# Name: Bryan Jensen
+# Date: 2/24/14
+# Filename: JensenSPIM1.a
+# 
+# Description:	Takes in up to 20 integers in the range from 1 to 15, and performs
+#				various calculations on the given numbers, finally giving a report
+#				of the results to stdio, including: the minimum value, maximum value,
+#				integer mean, variance and a bar chart of the frequency of the values.
+#
+# Input:		Up to 20 integers, in the range 1 to 15, inclusive, via stdio.
+#
+# Output:		The min, max, integer mean, variance are all output to stdio, as well
+#				as a chart showing the frequency of the input values.
+
+
 	.data
 ints:	.word	1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
 counts:	.word	0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -16,239 +31,239 @@ endl:	.asciiz	"\n"
 	.globl main
 main:
 
-	li	$s0, 0	# Current value
-	li	$s1, 20	# Smallest value
-	li	$s2, 0	# Largest value
-	li	$s3, 0	# Sum (and later the Integer Mean)
-	li	$s4, 0	# Variance
+	li		$s0, 0			# Current value
+	li		$s1, 20			# Smallest value
+	li		$s2, 0			# Largest value
+	li		$s3, 0			# Sum (and later the Integer Mean)
+	li		$s4, 0			# Variance
 
 	# ------------------------------------------------------------------------
 
-	li	$v0, 4
-	la	$a0, prompt
-	syscall				# Print input prompt
+	li		$v0, 4
+	la		$a0, prompt
+	syscall					# Print input prompt
 
 	# ------------------------------------------------------------------------
 
-	li	$t0, 0			# Index
-	li	$t1, 4			# Incrementer (aka memory size)
-	li	$t2, 80			# End (A maximum of 80 = 20 elements * 4 bytes)
+	li		$t0, 0			# Index
+	li		$t1, 4			# Incrementer (aka memory size)
+	li		$t2, 80			# End (A maximum of 80 = 20 elements * 4 bytes)
 
 inLoop: # Input loop
-	beq	$t0, $t2, after_inLoop	# If t0 == t2 (i == size), goto after_inLoop
+	beq		$t0, $t2, after_inLoop		# If t0 == t2 (i == size), goto after_inLoop
 
-	li	$v0, 5
-	syscall				# Read int into v0
+	li		$v0, 5
+	syscall								# Read int into v0
 
-	slt 	$t3, $v0, $zero		# t0 = v0 < 0
-	bne	$t3, $zero, after_inLoop	# If t3 != false, goto after_inLoop
+	slt		$t3, $v0, $zero				# t0 = v0 < 0
+	bne		$t3, $zero, after_inLoop	# If t3 != false, goto after_inLoop
 
 	# ------------------------------------------------------------------------
 
-	sw	$v0, ints($t0)
+	sw		$v0, ints($t0)
 
-	add	$t0, $t0, $t1
+	add		$t0, $t0, $t1
 
-	j	inLoop
+	j		inLoop
 
 after_inLoop:
 
 	move	$t2, $t0		# Set the high end of the array
-	li	$t0, 0			# Reset the index
+	li		$t0, 0			# Reset the index
 
 loop1: # Computation loop #1 - gets the min, max, counts and mean
-	beq	$t0, $t2, after_loop1 	# While t0 != t2
-	lw	$s0, ints($t0)
+	beq		$t0, $t2, after_loop1 		# While t0 != t2
+	lw		$s0, ints($t0)
 
-	slt	$t5, $s0, $s1 		# t5 = s0 < s1
-	beq	$t5, $zero, lt_else 	# If t5 == false, goto lt_else
+	slt		$t5, $s0, $s1 				# t5 = s0 < s1
+	beq		$t5, $zero, lt_else 		# If t5 == false, goto lt_else
 
-	move	$s1, $s0		# Update new less than value
+	move	$s1, $s0					# Update new less than value
 
 lt_else: # "else" for less than minimum check
-	slt	$t5, $s0, $s2
-	bne	$t5, $zero, gt_else 	# If t5 != false, goto lt_else
+	slt		$t5, $s0, $s2
+	bne		$t5, $zero, gt_else 		# If t5 != false, goto lt_else
 
-	move	$s2, $s0		# Update new greater than value
+	move	$s2, $s0					# Update new greater than value
 
 
 gt_else: # "else" for greater than maximum check
-	mult	$s0, $t1		# lo = s0 * t1 (Multiply the value by the incrementer to get an index)
-	mflo	$t7			# t7 = lo
-	addi	$t7, $t7, -4 		# t7 = t7 - 4 (Index for count of 7's is 6, scaled by mem size)
+	mult	$s0, $t1					# lo = s0 * t1 (Multiply the value by the incrementer to get an index)
+	mflo	$t7							# t7 = lo
+	addi	$t7, $t7, -4 				# t7 = t7 - 4 (Index for count of 7's is 6, scaled by mem size)
 
-	lw	$t6, counts($t7)	# Load up the existing count
-	addi 	$t6, $t6, 1 		# t6 = t6 + 1 (increment count)
+	lw		$t6, counts($t7)			# Load up the existing count
+	addi	$t6, $t6, 1 				# t6 = t6 + 1 (increment count)
 
-	sw	$t6, counts($t7)	# Store count back into array
+	sw		$t6, counts($t7)			# Store count back into array
 
 	# ------------------------------------------------------------------------
 
-	add	$s3, $s3, $s0		# Add to sum
-	add	$t0, $t0, $t1		# Increment index
+	add		$s3, $s3, $s0				# Add to sum
+	add		$t0, $t0, $t1				# Increment index
 
-	j	loop1
+	j		loop1
 
 after_loop1:
 
-	div	$t0, $t1		# Divide the final index by the memory size
-	mflo	$t5			# Grab the quotient (# elements) and insert into t5
+	div		$t0, $t1					# Divide the final index by the memory size
+	mflo	$t5							# Grab the quotient (# elements) and insert into t5
 
-	div 	$s3, $t5		# Divide sum by num elements to get mean
-	mflo	$s3			# Overwrite sum with mean
+	div 	$s3, $t5					# Divide sum by num elements to get mean
+	mflo	$s3							# Overwrite sum with mean
 
 	# ------------------------------------------------------------------------
 
-	li	$t0, 0			# Reset the index
-	li	$t4, 0			# Initialize the summation value with 0
+	li		$t0, 0						# Reset the index
+	li		$t4, 0						# Initialize the summation value with 0
 
 loop2: # Computation loop #2 - gets the variance
-	beq	$t0, $t2, after_loop2	# While t0 != t2
+	beq		$t0, $t2, after_loop2		# While t0 != t2
 
-	lw	$s0, ints($t0)
-	sub	$t5, $s0, $s3 		# t5 = s0 - s3 (aka: ints[i] - mean)
+	lw		$s0, ints($t0)
+	sub		$t5, $s0, $s3 				# t5 = s0 - s3 (aka: ints[i] - mean)
 
-	mult	$t5, $t5		# lo = t5 * t5 (don't need to worry about overflow, small numbers)
-	mflo	$t5			# t5 = lo (aka: overwrite with squared)
+	mult	$t5, $t5					# lo = t5 * t5 (don't need to worry about overflow, small numbers)
+	mflo	$t5							# t5 = lo (aka: overwrite with squared)
 
-	add	$t4, $t4, $t5		# Update the summation value
+	add		$t4, $t4, $t5				# Update the summation value
 
-	add 	$t0, $t0, $t1		# Increment index
+	add 	$t0, $t0, $t1				# Increment index
 
-	j	loop2
+	j		loop2
 
 after_loop2:
 
-	div 	$t2, $t1		# lo = t2 / t1 (aka: the upper bound / memory size OR num elements)
-	mflo	$t6			# t6 = num elements
-	addi	$t6, $t6, -1 		# t6 = t6 + -1
+	div 	$t2, $t1					# lo = t2 / t1 (aka: the upper bound / memory size OR num elements)
+	mflo	$t6							# t6 = num elements
+	addi	$t6, $t6, -1 				# t6 = t6 + -1
 
-	div	$t4, $t6		# lo = t4 / t6 (aka: summation value / num elements - 1)
-	mflo	$s4			# s4 = lo (storing the variance)
+	div		$t4, $t6					# lo = t4 / t6 (aka: summation value / num elements - 1)
+	mflo	$s4							# s4 = lo (storing the variance)
 
 
 
 printing: # Print out final results
 
-	li	$v0, 4
-	la	$a0, oStr1
-	syscall			# Print first output label
+	li		$v0, 4
+	la		$a0, oStr1
+	syscall								# Print first output label
 
-	li	$v0, 1
+	li		$v0, 1
 	move	$a0, $s1
-	syscall			# Print smallest value
+	syscall								# Print smallest value
 
-	li	$v0, 4
-	la	$a0, endl
-	syscall			# Newline
+	li		$v0, 4
+	la		$a0, endl
+	syscall								# Newline
 
 	# ------------------------------------------------------------------------
 
-	li	$v0, 4
-	la	$a0, oStr2
-	syscall			# Print second output label
+	li		$v0, 4
+	la		$a0, oStr2
+	syscall								# Print second output label
 
-	li	$v0, 1
+	li		$v0, 1
 	move	$a0, $s2
-	syscall			# Print largest value
+	syscall								# Print largest value
 
-	li	$v0, 4
-	la	$a0, endl
-	syscall			# Newline
+	li		$v0, 4
+	la		$a0, endl
+	syscall								# Newline
 
 	# ------------------------------------------------------------------------
 
-	li	$v0, 4
-	la	$a0, oStr3
-	syscall			# Print third output label
+	li		$v0, 4
+	la		$a0, oStr3
+	syscall								# Print third output label
 
-	li	$v0, 1
+	li		$v0, 1
 	move	$a0, $s3
-	syscall			# Print mean
+	syscall								# Print mean
 
-	li	$v0, 4
-	la	$a0, endl
-	syscall			# Newline
+	li		$v0, 4
+	la		$a0, endl
+	syscall								# Newline
 
 	# ------------------------------------------------------------------------
 
-	li	$v0, 4
-	la	$a0, oStr4
-	syscall			# Print fourth output label
+	li		$v0, 4
+	la		$a0, oStr4
+	syscall								# Print fourth output label
 
-	li	$v0, 1
+	li		$v0, 1
 	move	$a0, $s4
-	syscall			# Print variance
+	syscall								# Print variance
 
-	li	$v0, 4
-	la	$a0, endl
-	syscall			# Newline
-
-	# ------------------------------------------------------------------------
-
-	li	$v0, 4
-	la	$a0, oStr5
-	syscall			# Print fifth output label
-
-	li	$v0, 4
-	la	$a0, endl
-	syscall			# Newline
+	li		$v0, 4
+	la		$a0, endl
+	syscall								# Newline
 
 	# ------------------------------------------------------------------------
 
-	li	$t0, 0			# Reset the index
-	li 	$t2, 60			# Setting new upper bound on array
+	li		$v0, 4
+	la		$a0, oStr5
+	syscall								# Print fifth output label
+
+	li		$v0, 4
+	la		$a0, endl
+	syscall								# Newline
+
+	# ------------------------------------------------------------------------
+
+	li		$t0, 0						# Reset the index
+	li 		$t2, 60						# Setting new upper bound on array
 
 outLoop: # Prints out the bar graph based on counts array
-	beq	$t0, $t2, after_outLoop
+	beq		$t0, $t2, after_outLoop
 
-	li	$v0, 1
+	li		$v0, 1
 	move	$a0, $t0
-	div 	$a0, $t1		# lo = a0 / t1 (aka: memory location / memory size)
-	mflo	$a0			# a0 = lo
-	addi	$a0, $a0, 1 		# Index for 5's count is 4, so add 1
-	syscall				# Print the index number
+	div 	$a0, $t1					# lo = a0 / t1 (aka: memory location / memory size)
+	mflo	$a0							# a0 = lo
+	addi	$a0, $a0, 1 				# Index for 5's count is 4, so add 1
+	syscall								# Print the index number
 
-	li	$v0, 4
-	la 	$a0, delim
-	syscall				# Delimiter
+	li		$v0, 4
+	la 		$a0, delim
+	syscall								# Delimiter
 
-	lw	$t3, counts($t0)	# Load the number of subloops (aka the count)
+	lw		$t3, counts($t0)			# Load the number of subloops (aka the count)
 
 subLoop:
-	beq	$t3, $zero, after_subLoop # while t3 != 0
+	beq		$t3, $zero, after_subLoop 	# while t3 != 0
 
-	li	$v0, 4
-	la 	$a0, gSymb
-	syscall				# Graph symbol
+	li		$v0, 4
+	la 		$a0, gSymb
+	syscall								# Graph symbol
 
-	addi 	$t3, $t3, -1		# t3 = t3 - 1 (decrement the sub-index)
+	addi 	$t3, $t3, -1				# t3 = t3 - 1 (decrement the sub-index)
 
-	j	subLoop
+	j		subLoop
 
 after_subLoop:
 
-	li	$v0, 4
-	la	$a0, endl
-	syscall				# Newline
+	li		$v0, 4
+	la		$a0, endl
+	syscall								# Newline
 	
-	add 	$t0, $t0, $t1		# Increment index
+	add 	$t0, $t0, $t1				# Increment index
 
-	j	outLoop
+	j		outLoop
 
 after_outLoop:
 
 
 done: # Print bye and exit
-	li	$v0, 4
-	la	$a0, finStr
-	syscall			# Print final goodbye
+	li		$v0, 4
+	la		$a0, finStr
+	syscall								# Print final goodbye
 
-	li	$v0, 4
-	la	$a0, endl
-	syscall			# Newline
+	li		$v0, 4
+	la		$a0, endl
+	syscall								# Newline
 
 	# ------------------------------------------------------------------------
 
-	li	$v0, 10		# 10 = system call code for halting program
-	syscall			# Exit
+	li		$v0, 10						# 10 = system call code for halting program
+	syscall								# Exit
