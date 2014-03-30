@@ -1,0 +1,80 @@
+        .data
+
+fin:    .asciiz "Pump deactivated. G'day."
+endl:   .asciiz "\n"
+
+        .text
+        .globl main
+
+main:
+        jal     uInput
+
+        li      $t0, 'q'
+        beq     $t0, $v0, done          # If the value returned in v0 is equal to the sentinel -> done
+        
+
+        j       main
+
+
+done:
+        li      $v0, 4
+        la      $a0, fin
+        syscall
+        
+        li      $v0, 10
+        syscall
+
+
+# -------------------------------------------------------------------- #
+
+# Procedure: uInput
+
+# Purpose: Prompts user for input and returns their input values to the caller
+#          in registers $v0 and $v1
+# Parameters: None
+# Returns: Two characters ("words") stored in $v0 and $v1 representing purchase 
+#          options, and a float stored in $f0 representing the volume of gasoline
+#          to buy
+
+
+        .data
+
+tPay:   .asciiz "Enter payment type (S/C or Q to quit): "
+tGas:   .asciiz "\nEnter type of gas to pump (R/P/S): "
+aGas:   .asciiz "\nEnter amount of gas (in gallons) to start pumping: "
+
+        .text
+
+uInput:
+        li      $v0, 4
+        la      $a0, tPay
+        syscall
+
+        li      $v0, 12
+        syscall
+        move    $t0, $v0
+
+        li      $v0, 'q'
+        bne     $t0 # TODO: Quit as soon as the q is entered
+
+        li      $v0, 4
+        la      $a0, tGas
+        syscall
+
+        li      $v0, 12
+        syscall
+        move    $t1, $v0
+
+        li      $v0, 4
+        la      $a0, aGas
+        syscall
+
+        li      $v0, 6
+        syscall
+        # Leave answer in $f0
+
+        move    $v1, $t1
+        move    $v0, $t0
+
+inputDone:
+        j       $ra
