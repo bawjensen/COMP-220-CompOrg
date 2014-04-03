@@ -7,14 +7,16 @@ endl:   .asciiz "\n"
         .globl main
 main:
         # s0 - s3 are global "word" variables for gas information
-        # f4 - f7 are global float variables for gas information
+        # f4 - f8 are global float variables for gas information
 
         # Global variables:
         # s0: Type of gas
         # s1: Type of payment
         # f4: Amount of gas
-        # f5: Price of gas
-        # f6: Total cost
+        # f5: Initial price of gas/gal
+        # f6: Discount (from SmahtPay)
+        # f7: Final price of gas/gal
+        # f8: Total cost
 
         jal     uInput                  # Call uInput (user input) procedure
 
@@ -24,7 +26,7 @@ main:
 
         jal     calcGas                 # Performs all the calculations for the gas receipt
 
-        jal     printReceipt
+        jal     printReceipt            # Prints the receipt using the values in the global variable registers
 
         j       main                    # Loop back to beginning
 
@@ -41,10 +43,9 @@ done:
 
 # Procedure: lowercase
 
-# Purpose: Converts the letter in $v0 to lower case, if it started out
-#          as upper case, or leaves it alone if not. NOTE: Performs no 
-#          error checking, assumes it's a valid letter.
-# Parameters: One character in $v0
+# Purpose: Converts letter in $a0 to lowercase if it wasn't already, or
+#          leaves it as is if it was already
+# Parameters: One character in $a0 to be converted
 # Returns: The same character, guaranteed to be in lowercase, in $v0
 
         .data
@@ -52,13 +53,12 @@ done:
         .text
 lowercase:
         li      $t0, 'a'                # Load comparison value
-        slt     $t1, $a0, $t0           # Test if the char argument's value is less than 'a' (which means it's uppercase)
-        beq     $t1, $zero, afterLower  # If the value is NOT less, then jump over the altering step
+        bgt     $a0, $t0, afterLower    # If value is greater than 'a', letter is lowercase, so skip (branch) over lowercasing the letter
 
         addi    $a0, 32                 # Otherwise, alter it to be lowercase by adding 32
 
 afterLower:
-        move    $v0, $a0                # Move the result to the "return" registers
+        move    $v0, $a0                # Move the result to the "return" register
         j       $ra                     # Return to the caller
 
 # -------------------------------------------------------------------- #
@@ -74,8 +74,8 @@ afterLower:
 
         .data
 
-tPay:   .asciiz "\nEnter payment type (S/C or Q to quit): "
-tGas:   .asciiz "\nEnter type of gas to pump (R/P/S): "
+tPay:   .asciiz "\nEnter payment type - (S)mahtPay, (C)redit Card or (Q)uit): "
+tGas:   .asciiz "\nEnter type of gas - (R)egular, (P)lus or (S)uper: "
 aGas:   .asciiz "\nEnter amount of gas (in gallons) to start pumping: "
 
         .text
@@ -92,13 +92,13 @@ uInput:
 
         li      $v0, 12                 # 12 - Read char
         syscall                         # Read in the type of payment - goes into $v0
-        move    $a0, $v0                # Move the resultant char into $a0 as an argument for lowercase call
+        move    $a0, $v0                # Move the resultant char into $a0 as an argument for call to lowercase
 
         jal     lowercase               # Call lowercase procedure on first input character
-        move    $s0, $v0                # Move the result of the call from $v0 into $s0
+        move    $t2, $v0                # Move the result of the call from $v0 into $t2
 
         li      $v0, 'q'                # Load in sentinel value for quitting
-        beq     $s0, $v0, done          # If equal to the sentinel, goto done
+        beq     $t2, $v0, done          # If equal to the sentinel, goto done
 
         li      $v0, 4                  # 4 - Print string
         la      $a0, tGas               # Load type of gas prompt
@@ -106,10 +106,10 @@ uInput:
 
         li      $v0, 12                 # 12 - Read char
         syscall                         # Read in the type of gas - goes into $v0
-        move    $a0, $v0                # Move the resultant char into $a0 as an argument for lowercase call
+        move    $a0, $v0                # Move the resultant char into $a0 as an argument for call to lowercase
 
         jal     lowercase               # Call lowercase procedure on second input character
-        move    $s1, $v0                # Move the result of the call from $v0 into $s1
+        move    $t3, $v0                # Move the result of the call from $v0 into $t3
 
         li      $v0, 4                  # 4 - Print string
         la      $a0, aGas               # Load in amount of gas prompt
@@ -117,10 +117,10 @@ uInput:
 
         li      $v0, 6                  # 6 - Read float
         syscall                         # Read float into $f0
-        # Don't move - Leave answer in $f0
+        # Don't move - Leave result in $f0
 
-        move    $v0, $s0                # Move return value for type of payment into $v0
-        move    $v1, $s1                # Move return value for type of gas into $v1
+        move    $v0, $t2                # Move return value for type of payment into $v0
+        move    $v1, $t3                # Move return value for type of gas into $v1
 
 
 inputDone:
@@ -134,11 +134,11 @@ inputDone:
 
 # Procedure: calcGas
 
-# Purpose: Calculates the gas price based on the user input characters representing
-#          the type of payment and type of gas, and the amount of gas input, and then
-#          prints out a receipt for the amount charged
+# Purpose: Calculates the gas price based on the values (characters) in global variable
+#          registers representing the type of payment and type of gas, and the amount 
+#          of gas input. Puts the altered values back into the global registers. 
 # Parameters: None (instead accesses global values in s0 (gas type), s1 (payment type), 
-#             f4 (number of gallons), f5 (price/gallon) and f6 (total cost))
+#             f4 (number of gallons), f5 (price/gallon), f6 (discount), f7 (final price/gallon) and f8 (total cost))
 # Returns: Nothing
 
 
@@ -175,13 +175,19 @@ super:
 
 
 afterType:
+        li.s    $f6, 0.000              # Load the discount value as the default of 0.00
+
         li      $t0, 's'                # Load the comparison value - testing for SmahtPay
         bne     $t0, $s1, calcGasDone   # If payment type is not SmahtPay, jump to after discount subtraction
 
-        li.s    $f0, 0.100              # Load the discount value for SmahtPay
-        sub.s   $f5, $f5, $f0           # Take off the discount amount from the price/gal
+        li.s    $f6, 0.100              # Load the discount value for SmahtPay
+
 
 calcGasDone:
+        sub.s   $f7, $f5, $f6           # Take off the discount amount from the price/gal
+
+        mul.s   $f8, $f4, $f7           # Multiply the price/gal by the amount of gas (in gal) to get total cost
+
         lw      $ra, 20($sp)            # Restore old return address value
         lw      $fp, 16($sp)            # Restore old frame pointer
         addu    $sp, $sp, 32            # Shift stack pointer back to old location
@@ -192,7 +198,7 @@ calcGasDone:
 
 # Procedure: moneyPrint
 
-# Purpose: Takes in a (single precision) floating point value and prints out the
+# Purpose: Takes in a (single precision) floating point value (in $f12) and prints out the
 #          value rounded down to the hundredth (a.k.a. to the penny)
 # Parameters: Floating point to print out in $f12, and whether or not (boolean) to include
 #             the thousandth digit (useful for printing gas price) in $a0
@@ -208,11 +214,11 @@ moneyPrint:
         sw      $fp, 16($sp)            # Save the old frame pointer
         addu    $fp, $fp, 28            # Shift frame pointer to new location relative to stack pointer
 
-        mov.s   $f8, $f12               # Move the float used for formatted printing to a more convienent register
+        mov.s   $f9, $f12               # Move the float used for formatted printing to a more convienent register
         move    $t0, $a0                # Move the boolean (signifying rounding precision) to a more convienent register
 
         beq     $t0, $zero, hundredth   # If the boolean argument of rounding is zero (aka false): round to hundredth
-                                        #                                               Otherwise: round to thousandth
+                                        #                                        Otherwise (true): round to thousandth
 
 thousandth:
         li.s    $f1, 1000.0             # Set shift amount to 1000 (for later truncation)
@@ -225,55 +231,55 @@ hundredth:
         j       afterRoundIf
 
 afterRoundIf:
-        add.s   $f8, $f8, $f2           # Add the rounding-shift
+        add.s   $f9, $f9, $f2           # Add the rounding-shift
 
-        mov.s   $f12, $f8               # Load the float value into argument register for truncFloat
+        mov.s   $f12, $f9               # Load the float value into argument register for truncFloat
         jal     truncFloat              # Truncate the value in $f12, result in $v0
         move    $t1, $v0                # Move the result to $t1
 
         mtc1    $t1, $f0                # Convert the integer in $t1 to a float in $f0
-        cvt.s.w $f0, $f0                # Convert the word fl. pt. representation of $f0 into a single fl. pt. representation
+        cvt.s.w $f0, $f0                # Convert the "word" fl. pt. representation of $f0 into a "single" fl. pt. representation
 
-        sub.s   $f0, $f8, $f0           # Subtract away the integer portion of the value (leaving only the decimal)
+        sub.s   $f0, $f9, $f0           # Subtract away the integer portion of the value (leaving only the decimal)
 
-        li      $t2, 0                  # $t2 is the number of leading zeros (assume none to start with)
+        li      $t2, 0                  # $t2 is the number of leading zeros to pad the decimal with (assume none to start with)
 
-        beq     $t0, $zero, hund_Opts
-        j       thou_Opts
+        beq     $t0, $zero, hund_Opts   # If only rounding to hundreds (aka the nearest penny) jump to that option section
+        j       thou_Opts               # Otherwise, jump to thousands option section
 
-hund_Opts:
-        li.s    $f2, 0.01
-        c.lt.s  $f0, $f2
-        bc1t    oneLeadZero             # Don't need any leading zeros
+hund_Opts:                              # If rounding to hundred, need to test against certain values for padding with zeros
+        li.s    $f2, 0.01               # First test if less than 0.01
+        c.lt.s  $f0, $f2                # If the value is less than 0.01, then display is simply going to be a 0, so pad with 1 zero
+        bc1t    oneLeadZero             # Jump to setting of "padding" with 1 zero
 
-        li.s    $f2, 0.1
-        c.lt.s  $f0, $f2
-        bc1t    oneLeadZero
+        li.s    $f2, 0.1                # Then test if less than 0.1
+        c.lt.s  $f0, $f2                # If the value is less than 0.1, then display is simply going to be a single digit, so again pad with 1 zero
+        bc1t    oneLeadZero             # Jump to setting of "padding" with 1 zero
 
-        j       afterLeadZero
+        j       afterLeadZero           # Otherwise, just jump to padding loop, leaving "padding" value with 0 zeros (the default setting)
 
-thou_Opts:
-        li.s    $f2, 0.001
-        c.lt.s  $f0, $f2
-        bc1t    twoLeadZeros
+thou_Opts:                              # If rounding to thousand, need to test against certain values for padding with zeros
+        li.s    $f2, 0.001              # First test if less than 0.001
+        c.lt.s  $f0, $f2                # If the value is less than 0.001, then display is simply going to be a 0, so pad with 2 zeros
+        bc1t    twoLeadZeros            # Jump to setting of "padding" with 2 zeros
 
-        li.s    $f2, 0.01
-        c.lt.s  $f0, $f2
-        bc1t    twoLeadZeros
+        li.s    $f2, 0.01               # Then test if less than 0.01
+        c.lt.s  $f0, $f2                # If the value is less than 0.01, then display is simply going to be a single digit, so again pad with 2 zeros
+        bc1t    twoLeadZeros            # Jump to setting of "padding" with 2 zeros
 
-        li.s    $f2, 0.1
-        c.lt.s  $f0, $f2
-        bc1t    oneLeadZero
+        li.s    $f2, 0.1                # Then test if less than 0.1
+        c.lt.s  $f0, $f2                # If the value is less than 0.1, then display is going to be 2 digits, so pad with 1 zero
+        bc1t    oneLeadZero             # Jump to setting of "padding" with 1 zero
 
-        j       afterLeadZero
+        j       afterLeadZero           # Otherwise, just jump to padding loop, leaving "padding" value with 0 zeros (the default setting)
 
 oneLeadZero:
-        li      $t2, 1
-        j       afterLeadZero
+        li      $t2, 1                  # $t2 holds the number of zeros to pad with - pad with 1
+        j       afterLeadZero           # Jump to after all the calculations
 
 twoLeadZeros:
-        li      $t2, 2
-        j       afterLeadZero
+        li      $t2, 2                  # $t2 holds the number of zeros to pad with - pad with 2
+        j       afterLeadZero           # Jump to after all the calculations
 
 afterLeadZero:
         mul.s   $f0, $f0, $f1           # Multiply the float by the shift amount (in base 10)
@@ -291,19 +297,18 @@ afterLeadZero:
         syscall                         # Print the point
 
 
-lZeroLoop:
-        beq     $t2, $zero, lZeroLoop_done
+lZeroLoop:                              # Loop for padding number with zeros
+        beq     $t2, $zero, lZeroLoop_done # If number of zeros to pad with is 0, then done
 
-        li      $v0, 1
-        li      $a0, 0
-        syscall
+        li      $v0, 1                  # 1 - Print integer
+        li      $a0, 0                  # Load in 0 to print out
+        syscall                         # Print a "padding" 0
 
-        subu    $t2, $t2, 1
+        subu    $t2, $t2, 1             # Decrement number of "padding" zeros remaining
 
-        j       lZeroLoop
+        j       lZeroLoop               # Return to top of loop
 
-lZeroLoop_done:
-
+lZeroLoop_done:                         # Outside of padding zero loop
 
         li      $v0, 1                  # 1 - Print integer
         move    $a0, $t0                # Load the result from the second truncation
@@ -341,14 +346,25 @@ truncFloat:
 #          amount of gas (in gallons) in $f13 - formatted nicely and rounded to the correct number
 #          of decimal places for monetary transactions (a.k.a. rounded to the penny)
 # Parameters: None (instead accesses global values in s0 (gas type), s1 (payment type), 
-#             f4 (number of gallons), f5 (price/gallon) and f6 (total cost))
+#             f4 (number of gallons), f5 (price/gallon), f6 (discount), f7 (final price/gallon) and f8 (total cost))
 # Returns: Nothing
         .data
-bar:    .asciiz "---------------------------------------\n"
-header: .asciiz "Welcome to\nCUMBERLAND FARMS\n"
-str1:   .asciiz " gallons at $"
-str2:   .asciiz "/gal gives $"
-str3:   .asciiz " as your total cost."
+bar:    .asciiz "\n\n\n----------------------------------------\n\n"
+header: .asciiz "\n              Welcome to\n           COWBERLAND FARMS\n          Paris, Maine 04281\n           1 (28A) 186-0296\n"
+info:   .asciiz "\n\n   02/30/2016               23:11:11\n\n   PUMP                           3E\n   INVOICE                  0x2F435B"
+gal:    .asciiz "\n   GALLONS                "
+prod_R: .asciiz "\n   PRODUCT                   REGULAR"
+prod_P: .asciiz "\n   PRODUCT                      PLUS"
+prod_S: .asciiz "\n   PRODUCT                     SUPER"
+iPrice: .asciiz "\n   FULL PRICE/GAL             $"
+disc:   .asciiz "\n   DISCOUNT                   $"
+fPrice: .asciiz "\n   YOUR PRICE/GAL             $"
+cost:   .asciiz "\n   TOTAL COST                  $"
+sPay:   .asciiz "\n\n   PAID WITH:               SmahtPay"
+cCard:  .asciiz "\n\n   PAID WITH:            Credit Card"
+paid:   .asciiz "\n\n   AMOUNT TENDERED             $"
+change: .asciiz "\n   CHANGE DUE                  $"
+footer: .asciiz "\n\n\n       Thank you for your money!\n     Please give us some more soon!\n"
 
         .text
 printReceipt:
@@ -362,42 +378,141 @@ printReceipt:
         syscall                         # Print out the string
 
         li      $v0, 4                  # 4 - Print string
-        la      $a0, endl               # Load in the endline character
-        syscall                         # Print the endline
+        la      $a0, header             # Load in the header info (all the gas station jargon)
+        syscall                         # Print out the header
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, info               # Load in the other info (time, date, pump #, etc.)
+        syscall                         # Print out the info
+
+        # Amount of gas
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, gal                # Load in the amount of gal (# of gallons) label string
+        syscall                         # Print out the gallon amount label
 
         li      $v0, 2                  # 2 - Print float (single)
         mov.s   $f12, $f4               # Load in the amount of gas
         syscall                         # Print the amount of gas
 
+
+        li      $t0, 'r'
+        beq     $s0, $t0, regGas
+        li      $t0, 'p'
+        beq     $s0, $t0, plusGas
+        j       superGas
+
+regGas:
         li      $v0, 4                  # 4 - Print string
-        la      $a0, str1               # Load in the first output string
-        syscall                         # Print out the string
+        la      $a0, prod_R             # Load in the gas type: regular label string
+        syscall                         # Print out the label
 
-        li      $a0, 1                  # Load in 1 as the first word argument to moneyPrint (signifies rounding to 1000th instead of 100th)
-        mov.s   $f12, $f5               # Load in price/gal as first fl. pt. argument to moneyPrint
-        jal     moneyPrint              # Prints out the float with nice formatting
+        j       iPriceGal
 
+plusGas:
         li      $v0, 4                  # 4 - Print string
-        la      $a0, str2               # Load in the second output string
-        syscall                         # Print out the string
+        la      $a0, prod_P             # Load in the gas type: plus label string
+        syscall                         # Print out the label
+        
+        j       iPriceGal
 
-        mul.s   $f6, $f4, $f5           # Multiply the price/gal by the amount of gas (in gal) to get total cost
+superGas:
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, prod_S             # Load in the gas type: super label string
+        syscall                         # Print out the label
+        
+        j       iPriceGal
 
-        li      $a0, 0                  # Load in 0 as the first word argument to moneyPrint (signifies rounding to 100th instead of 1000th)
-        mov.s   $f12, $f6               # Load in the total price to print out as first fl. pt. argument to moneyPrint
+
+iPriceGal:
+        # Initial price / gal
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, iPrice             # Load in the price label string
+        syscall                         # Print out the price label
+
+        li      $a0, 1                  # Load in 1 as the first "word" argument to moneyPrint (signifies rounding to 1000th instead of 100th)
+        mov.s   $f12, $f5               # Load in initial price/gal as first fl. pt. argument to moneyPrint
+        jal     moneyPrint              # Prints out the price/gal with nice formatting
+
+
+        # Discount
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, disc               # Load in the discount label string
+        syscall                         # Print out the discount label
+
+        li      $a0, 1                  # Load in 1 as the first "word" argument to moneyPrint (signifies rounding to 1000th instead of 100th)
+        mov.s   $f12, $f6               # Load in discount as first fl. pt. argument to moneyPrint
+        jal     moneyPrint              # Prints out the discount with nice formatting
+
+
+        # Final price / gal
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, fPrice             # Load in the price label string
+        syscall                         # Print out the price label
+
+        li      $a0, 1                  # Load in 1 as the first "word" argument to moneyPrint (signifies rounding to 1000th instead of 100th)
+        mov.s   $f12, $f7               # Load in final price/gal as first fl. pt. argument to moneyPrint
+        jal     moneyPrint              # Prints out the price/gal with nice formatting
+
+
+        # Total cost
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, cost               # Load in the (total) cost label string
+        syscall                         # Print out the label
+
+        li      $a0, 0                  # Load in 0 as the first "word" argument to moneyPrint (signifies rounding to 100th instead of 1000th)
+        mov.s   $f12, $f8               # Load in the total price to print out as first fl. pt. argument to moneyPrint
         jal     moneyPrint              # Prints out the total price with nice formatting
 
+
+        li      $t0, 'c'
+        beq     $s1, $t0, cCardPaid    
+        j       sPayPaid
+
+cCardPaid:
         li      $v0, 4                  # 4 - Print string
-        la      $a0, endl               # Load in the endline character
-        syscall                         # Print the endline
+        la      $a0, cCard              # Load in the payment type: credit card label string
+        syscall                         # Print out the label
+
+        j       amtPaid
+
+sPayPaid:
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, sPay               # Load in the payment type: SmahtPay label string
+        syscall                         # Print out the label
+        
+        j       amtPaid
+
+
+amtPaid:
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, paid               # Load in the amount paid label string
+        syscall                         # Print out the label
+
+        li      $a0, 0                  # Load in 0 as the first "word" argument to moneyPrint (signifies rounding to 100th instead of 1000th)
+        mov.s   $f12, $f8               # Load in the total price to print out as first fl. pt. argument to moneyPrint
+        jal     moneyPrint              # Prints out the total price with nice formatting as the amount "paid"
+
+
+
 
         li      $v0, 4                  # 4 - Print string
-        la      $a0, endl               # Load in the endline character
-        syscall                         # Print the endline
+        la      $a0, change             # Load in the change due label string
+        syscall                         # Print out the label
+
+        li      $a0, 0                  # Load in 0 as the first "word" argument to moneyPrint (signifies rounding to 100th instead of 1000th)
+        li.s    $f12, 0.0               # Load in the "change due" (always 0) as the first fl. pt. argument to moneyPrint
+        jal     moneyPrint              # Prints out the change due with nice formatting
+
+
+
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, footer             # Load in the footer info (all the "thank you" jargon)
+        syscall                         # Print out the footer
 
         li      $v0, 4                  # 4 - Print string
         la      $a0, bar                # Load in the bar of dashes
-        syscall                         # Print out the string
+        syscall                         # Print out the bar
 
         li      $v0, 4                  # 4 - Print string
         la      $a0, endl               # Load in the endline character
