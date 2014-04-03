@@ -1,80 +1,412 @@
         .data
 
-fin:    .asciiz "Pump deactivated. G'day."
+fin:    .asciiz "\n\nPump deactivated. G'day."
 endl:   .asciiz "\n"
 
         .text
         .globl main
-
 main:
-        jal     uInput
+        # s0 - s3 are global "word" variables for gas information
+        # f4 - f7 are global float variables for gas information
 
-        li      $t0, 'q'
-        beq     $t0, $v0, done          # If the value returned in v0 is equal to the sentinel -> done
-        
+        # Global variables:
+        # s0: Type of gas
+        # s1: Type of payment
+        # f4: Amount of gas
+        # f5: Price of gas
+        # f6: Total cost
 
-        j       main
+        jal     uInput                  # Call uInput (user input) procedure
 
+        move    $s0, $v1                # Move the type of gas into the s0 (global) register
+        move    $s1, $v0                # Move the type of payment into the s1 (global) register
+        mov.s   $f4, $f0                # Move the amount of gas into f4 (global) register
+
+        jal     calcGas                 # Performs all the calculations for the gas receipt
+
+        jal     printReceipt
+
+        j       main                    # Loop back to beginning
 
 done:
-        li      $v0, 4
-        la      $a0, fin
-        syscall
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, fin                # Load goodbye prompt
+        syscall                         # Print out prompt
         
-        li      $v0, 10
-        syscall
+        li      $v0, 10                 # 10 - Exit
+        syscall                         # Exit the system
 
+
+# -------------------------------------------------------------------- #
+
+# Procedure: lowercase
+
+# Purpose: Converts the letter in $v0 to lower case, if it started out
+#          as upper case, or leaves it alone if not. NOTE: Performs no 
+#          error checking, assumes it's a valid letter.
+# Parameters: One character in $v0
+# Returns: The same character, guaranteed to be in lowercase, in $v0
+
+        .data
+
+        .text
+lowercase:
+        li      $t0, 'a'                # Load comparison value
+        slt     $t1, $a0, $t0           # Test if the char argument's value is less than 'a' (which means it's uppercase)
+        beq     $t1, $zero, afterLower  # If the value is NOT less, then jump over the altering step
+
+        addi    $a0, 32                 # Otherwise, alter it to be lowercase by adding 32
+
+afterLower:
+        move    $v0, $a0                # Move the result to the "return" registers
+        j       $ra                     # Return to the caller
 
 # -------------------------------------------------------------------- #
 
 # Procedure: uInput
 
-# Purpose: Prompts user for input and returns their input values to the caller
-#          in registers $v0 and $v1
+# Purpose: Prompts user for input choices on type of payment, type of gas
+#          and amount of gas, and returns their input values to the caller
 # Parameters: None
-# Returns: Two characters ("words") stored in $v0 and $v1 representing purchase 
-#          options, and a float stored in $f0 representing the volume of gasoline
-#          to buy
+# Returns: The type of payment (char) in $v0, type of gas (char) in $v1 and
+#          the amount of gas (float, single) in $f0
 
 
         .data
 
-tPay:   .asciiz "Enter payment type (S/C or Q to quit): "
+tPay:   .asciiz "\nEnter payment type (S/C or Q to quit): "
 tGas:   .asciiz "\nEnter type of gas to pump (R/P/S): "
 aGas:   .asciiz "\nEnter amount of gas (in gallons) to start pumping: "
 
         .text
-
 uInput:
-        li      $v0, 4
-        la      $a0, tPay
-        syscall
+        subu    $sp, $sp, 32            # Shift stack pointer to new location
+        sw      $ra, 20($sp)            # Save the old return address
+        sw      $fp, 16($sp)            # Save the old frame pointer
+        addu    $fp, $fp, 28            # Shift frame pointer to new location relative to stack pointer
 
-        li      $v0, 12
-        syscall
-        move    $t0, $v0
 
-        li      $v0, 'q'
-        bne     $t0 # TODO: Quit as soon as the q is entered
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, tPay               # Load type of payment prompt
+        syscall                         # Print out prompt
 
-        li      $v0, 4
-        la      $a0, tGas
-        syscall
+        li      $v0, 12                 # 12 - Read char
+        syscall                         # Read in the type of payment - goes into $v0
+        move    $a0, $v0                # Move the resultant char into $a0 as an argument for lowercase call
 
-        li      $v0, 12
-        syscall
-        move    $t1, $v0
+        jal     lowercase               # Call lowercase procedure on first input character
+        move    $s0, $v0                # Move the result of the call from $v0 into $s0
 
-        li      $v0, 4
-        la      $a0, aGas
-        syscall
+        li      $v0, 'q'                # Load in sentinel value for quitting
+        beq     $s0, $v0, done          # If equal to the sentinel, goto done
 
-        li      $v0, 6
-        syscall
-        # Leave answer in $f0
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, tGas               # Load type of gas prompt
+        syscall                         # Print out prompt
 
-        move    $v1, $t1
-        move    $v0, $t0
+        li      $v0, 12                 # 12 - Read char
+        syscall                         # Read in the type of gas - goes into $v0
+        move    $a0, $v0                # Move the resultant char into $a0 as an argument for lowercase call
+
+        jal     lowercase               # Call lowercase procedure on second input character
+        move    $s1, $v0                # Move the result of the call from $v0 into $s1
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, aGas               # Load in amount of gas prompt
+        syscall                         # Print out prompt
+
+        li      $v0, 6                  # 6 - Read float
+        syscall                         # Read float into $f0
+        # Don't move - Leave answer in $f0
+
+        move    $v0, $s0                # Move return value for type of payment into $v0
+        move    $v1, $s1                # Move return value for type of gas into $v1
+
 
 inputDone:
-        j       $ra
+        lw      $ra, 20($sp)            # Restore old return address value
+        lw      $fp, 16($sp)            # Restore old frame pointer
+        addu    $sp, $sp, 32            # Shift stack pointer back to old location
+
+        j       $ra                     # Return to caller
+
+# -------------------------------------------------------------------- #
+
+# Procedure: calcGas
+
+# Purpose: Calculates the gas price based on the user input characters representing
+#          the type of payment and type of gas, and the amount of gas input, and then
+#          prints out a receipt for the amount charged
+# Parameters: None (instead accesses global values in s0 (gas type), s1 (payment type), 
+#             f4 (number of gallons), f5 (price/gallon) and f6 (total cost))
+# Returns: Nothing
+
+
+        .data
+
+        .text
+calcGas:
+        subu    $sp, $sp, 32            # Shift stack pointer to new location
+        sw      $ra, 20($sp)            # Save the old return address
+        sw      $fp, 16($sp)            # Save the old frame pointer
+        addu    $fp, $fp, 28            # Shift frame pointer to new location relative to stack pointer
+
+
+        li      $t0, 'r'                # Load the comparison value - testing for regular gas
+        beq     $t0, $s0, regular       # If the argument char for type of gas is equal -> jump
+
+        li      $t0, 'p'                # Load the comparison value - testing for plus gas
+        beq     $t0, $s0, plus          # If the argument char for type of gas is equal -> jump
+        
+        li      $t0, 's'                # Load the comparison value - testing for super gas
+        beq     $t0, $s0, super         # If the argument char for type of gas is equal -> jump
+
+regular:
+        li.s    $f5, 3.619              # Load regular gas price/gal
+        j       afterType
+
+plus:
+        li.s    $f5, 3.719              # Load plus gas price/gal
+        j       afterType
+
+super:
+        li.s    $f5, 3.839              # Load super gas price/gal
+        j       afterType
+
+
+afterType:
+        li      $t0, 's'                # Load the comparison value - testing for SmahtPay
+        bne     $t0, $s1, calcGasDone   # If payment type is not SmahtPay, jump to after discount subtraction
+
+        li.s    $f0, 0.100              # Load the discount value for SmahtPay
+        sub.s   $f5, $f5, $f0           # Take off the discount amount from the price/gal
+
+calcGasDone:
+        lw      $ra, 20($sp)            # Restore old return address value
+        lw      $fp, 16($sp)            # Restore old frame pointer
+        addu    $sp, $sp, 32            # Shift stack pointer back to old location
+
+        j       $ra                     # Return to caller
+
+# -------------------------------------------------------------------- #
+
+# Procedure: moneyPrint
+
+# Purpose: Takes in a (single precision) floating point value and prints out the
+#          value rounded down to the hundredth (a.k.a. to the penny)
+# Parameters: Floating point to print out in $f12, and whether or not (boolean) to include
+#             the thousandth digit (useful for printing gas price) in $a0
+# Returns: None
+
+        .data
+dPoint: .asciiz "."
+
+        .text
+moneyPrint:
+        subu    $sp, $sp, 32            # Shift stack pointer to new location
+        sw      $ra, 20($sp)            # Save the old return address
+        sw      $fp, 16($sp)            # Save the old frame pointer
+        addu    $fp, $fp, 28            # Shift frame pointer to new location relative to stack pointer
+
+        mov.s   $f8, $f12               # Move the float used for formatted printing to a more convienent register
+        move    $t0, $a0                # Move the boolean (signifying rounding precision) to a more convienent register
+
+        beq     $t0, $zero, hundredth   # If the boolean argument of rounding is zero (aka false): round to hundredth
+                                        #                                               Otherwise: round to thousandth
+
+thousandth:
+        li.s    $f1, 1000.0             # Set shift amount to 1000 (for later truncation)
+        li.s    $f2, 0.0005             # Load in the rounding-shift amount (so that truncation results in a correctly rounded value)
+        j       afterRoundIf
+
+hundredth:
+        li.s    $f1, 100.0              # Set shift amount to 100 (for later truncation)
+        li.s    $f2, 0.005              # Load in the rounding-shift amount (so that truncation results in a correctly rounded value)
+        j       afterRoundIf
+
+afterRoundIf:
+        add.s   $f8, $f8, $f2           # Add the rounding-shift
+
+        mov.s   $f12, $f8               # Load the float value into argument register for truncFloat
+        jal     truncFloat              # Truncate the value in $f12, result in $v0
+        move    $t1, $v0                # Move the result to $t1
+
+        mtc1    $t1, $f0                # Convert the integer in $t1 to a float in $f0
+        cvt.s.w $f0, $f0                # Convert the word fl. pt. representation of $f0 into a single fl. pt. representation
+
+        sub.s   $f0, $f8, $f0           # Subtract away the integer portion of the value (leaving only the decimal)
+
+        li      $t2, 0                  # $t2 is the number of leading zeros (assume none to start with)
+
+        beq     $t0, $zero, hund_Opts
+        j       thou_Opts
+
+hund_Opts:
+        li.s    $f2, 0.01
+        c.lt.s  $f0, $f2
+        bc1t    oneLeadZero             # Don't need any leading zeros
+
+        li.s    $f2, 0.1
+        c.lt.s  $f0, $f2
+        bc1t    oneLeadZero
+
+        j       afterLeadZero
+
+thou_Opts:
+        li.s    $f2, 0.001
+        c.lt.s  $f0, $f2
+        bc1t    twoLeadZeros
+
+        li.s    $f2, 0.01
+        c.lt.s  $f0, $f2
+        bc1t    twoLeadZeros
+
+        li.s    $f2, 0.1
+        c.lt.s  $f0, $f2
+        bc1t    oneLeadZero
+
+        j       afterLeadZero
+
+oneLeadZero:
+        li      $t2, 1
+        j       afterLeadZero
+
+twoLeadZeros:
+        li      $t2, 2
+        j       afterLeadZero
+
+afterLeadZero:
+        mul.s   $f0, $f0, $f1           # Multiply the float by the shift amount (in base 10)
+
+        mov.s   $f12, $f0               # Move the result to $f12 (as an argument to truncFloat)
+        jal     truncFloat              # Truncate the rounded shifted decimal value
+        move    $t0, $v0                # Move the result to be an argument to the "Print integer" below
+
+        li      $v0, 1                  # 1 - Print integer
+        move    $a0, $t1                # Load the result from the first truncation
+        syscall                         # Print the integer
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, dPoint             # Load the decimal point
+        syscall                         # Print the point
+
+
+lZeroLoop:
+        beq     $t2, $zero, lZeroLoop_done
+
+        li      $v0, 1
+        li      $a0, 0
+        syscall
+
+        subu    $t2, $t2, 1
+
+        j       lZeroLoop
+
+lZeroLoop_done:
+
+
+        li      $v0, 1                  # 1 - Print integer
+        move    $a0, $t0                # Load the result from the second truncation
+        syscall                         # Print the truncated decimal portion, now represented as an integer
+
+        lw      $ra, 20($sp)            # Restore old return address value
+        lw      $fp, 16($sp)            # Restore old frame pointer
+        addu    $sp, $sp, 32            # Shift stack pointer back to old location
+
+        j       $ra                     # Return to caller
+
+
+# -------------------------------------------------------------------- #
+
+# Procedure: truncFloat
+
+# Purpose: Takes in a single precision floating point and truncates it to an integer
+# Parameters: Floating point to truncate in $f12
+# Returns: Integer representation of that floating point in $v0
+
+        .data
+
+        .text
+truncFloat:
+        cvt.w.s $f12, $f12              # Convert the single precision float into a word, still in $f register
+        mfc1    $v0, $f12               # Move the floating point into a "word" return register
+
+        j       $ra                     # Return to caller
+
+# -------------------------------------------------------------------- #
+
+# Procedure: printReceipt
+
+# Purpose: Prints out the gas pump receipt based on the passed in values - price/gal in $f12 and
+#          amount of gas (in gallons) in $f13 - formatted nicely and rounded to the correct number
+#          of decimal places for monetary transactions (a.k.a. rounded to the penny)
+# Parameters: None (instead accesses global values in s0 (gas type), s1 (payment type), 
+#             f4 (number of gallons), f5 (price/gallon) and f6 (total cost))
+# Returns: Nothing
+        .data
+bar:    .asciiz "---------------------------------------\n"
+header: .asciiz "Welcome to\nCUMBERLAND FARMS\n"
+str1:   .asciiz " gallons at $"
+str2:   .asciiz "/gal gives $"
+str3:   .asciiz " as your total cost."
+
+        .text
+printReceipt:
+        subu    $sp, $sp, 32            # Shift stack pointer to new location
+        sw      $ra, 20($sp)            # Save the old return address
+        sw      $fp, 16($sp)            # Save the old frame pointer
+        addu    $fp, $fp, 28            # Shift frame pointer to new location relative to stack pointer
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, bar                # Load in the bar of dashes
+        syscall                         # Print out the string
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, endl               # Load in the endline character
+        syscall                         # Print the endline
+
+        li      $v0, 2                  # 2 - Print float (single)
+        mov.s   $f12, $f4               # Load in the amount of gas
+        syscall                         # Print the amount of gas
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, str1               # Load in the first output string
+        syscall                         # Print out the string
+
+        li      $a0, 1                  # Load in 1 as the first word argument to moneyPrint (signifies rounding to 1000th instead of 100th)
+        mov.s   $f12, $f5               # Load in price/gal as first fl. pt. argument to moneyPrint
+        jal     moneyPrint              # Prints out the float with nice formatting
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, str2               # Load in the second output string
+        syscall                         # Print out the string
+
+        mul.s   $f6, $f4, $f5           # Multiply the price/gal by the amount of gas (in gal) to get total cost
+
+        li      $a0, 0                  # Load in 0 as the first word argument to moneyPrint (signifies rounding to 100th instead of 1000th)
+        mov.s   $f12, $f6               # Load in the total price to print out as first fl. pt. argument to moneyPrint
+        jal     moneyPrint              # Prints out the total price with nice formatting
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, endl               # Load in the endline character
+        syscall                         # Print the endline
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, endl               # Load in the endline character
+        syscall                         # Print the endline
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, bar                # Load in the bar of dashes
+        syscall                         # Print out the string
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, endl               # Load in the endline character
+        syscall                         # Print the endline
+
+printReceiptDone:
+        lw      $ra, 20($sp)            # Restore old return address value
+        lw      $fp, 16($sp)            # Restore old frame pointer
+        addu    $sp, $sp, 32            # Shift stack pointer back to old location
+
+        j       $ra                     # Return to caller
+
