@@ -1,3 +1,21 @@
+# Bryan Jensen
+# April 3, 2014
+#
+# Description:  This program simulates a gasoline pump in the "Cowberland Farms" gas station chain,
+#               using user input via "hard-coded" buttons on the pump(aka no error checking performed)
+#               and a value for the number of gallons to print out a full receipt of the purchase.
+#
+# Input:        This program takes in two characters from the keyboard, simulating two button-based choices
+#               where the buttons would be present on the pump. The first choice is the type of payment, either
+#               credit card or the Cowberland Farms "SmahtPay" app system. The second choice is the type of gas
+#               to pump, either regular, plus or super (all unleaded, of course). The third input is a floating point
+#               value for the number of gallons to pump.
+#
+# Output:       A fully formatted receipt, echoing back the user's input along with additional information typically
+#               found on gas station recepts, such as location, time, date (all simulated), along with useful information
+#               such as the total cost of the purchase, what discount was gained, etc.
+
+
         .data
 
 fin:    .asciiz "\n\nPump deactivated. G'day."
@@ -17,6 +35,8 @@ main:
         # f6: Discount (from SmahtPay)
         # f7: Final price of gas/gal
         # f8: Total cost
+        # f9: Amount saved
+
 
         jal     uInput                  # Call uInput (user input) procedure
 
@@ -186,7 +206,8 @@ afterType:
 calcGasDone:
         sub.s   $f7, $f5, $f6           # Take off the discount amount from the price/gal
 
-        mul.s   $f8, $f4, $f7           # Multiply the price/gal by the amount of gas (in gal) to get total cost
+        mul.s   $f8, $f4, $f7           # Multiply the price/gal (f7) by the amount of gas (f4) to get total cost
+        mul.s   $f9, $f6, $f4           # Multiply the discount (f6) by the amount of gas (f4) to get full discount
 
         lw      $ra, 20($sp)            # Restore old return address value
         lw      $fp, 16($sp)            # Restore old frame pointer
@@ -214,7 +235,7 @@ moneyPrint:
         sw      $fp, 16($sp)            # Save the old frame pointer
         addu    $fp, $fp, 28            # Shift frame pointer to new location relative to stack pointer
 
-        mov.s   $f9, $f12               # Move the float used for formatted printing to a more convienent register
+        mov.s   $f10, $f12              # Move the float used for formatted printing to a more convienent register
         move    $t0, $a0                # Move the boolean (signifying rounding precision) to a more convienent register
 
         beq     $t0, $zero, hundredth   # If the boolean argument of rounding is zero (aka false): round to hundredth
@@ -231,16 +252,16 @@ hundredth:
         j       afterRoundIf
 
 afterRoundIf:
-        add.s   $f9, $f9, $f2           # Add the rounding-shift
+        add.s   $f10, $f10, $f2         # Add the rounding-shift
 
-        mov.s   $f12, $f9               # Load the float value into argument register for truncFloat
+        mov.s   $f12, $f10              # Load the float value into argument register for truncFloat
         jal     truncFloat              # Truncate the value in $f12, result in $v0
         move    $t1, $v0                # Move the result to $t1
 
         mtc1    $t1, $f0                # Convert the integer in $t1 to a float in $f0
         cvt.s.w $f0, $f0                # Convert the "word" fl. pt. representation of $f0 into a "single" fl. pt. representation
 
-        sub.s   $f0, $f9, $f0           # Subtract away the integer portion of the value (leaving only the decimal)
+        sub.s   $f0, $f10, $f0          # Subtract away the integer portion of the value (leaving only the decimal)
 
         li      $t2, 0                  # $t2 is the number of leading zeros to pad the decimal with (assume none to start with)
 
@@ -359,7 +380,8 @@ prod_S: .asciiz "\n   PRODUCT                     SUPER"
 iPrice: .asciiz "\n   FULL PRICE/GAL             $"
 disc:   .asciiz "\n   DISCOUNT                   $"
 fPrice: .asciiz "\n   YOUR PRICE/GAL             $"
-cost:   .asciiz "\n   TOTAL COST                  $"
+cost:   .asciiz "\n\n   TOTAL COST                  $"
+tDisc:  .asciiz "\n   YOU SAVED                   $"
 sPay:   .asciiz "\n\n   PAID WITH:               SmahtPay"
 cCard:  .asciiz "\n\n   PAID WITH:            Credit Card"
 paid:   .asciiz "\n\n   AMOUNT TENDERED             $"
@@ -384,15 +406,6 @@ printReceipt:
         li      $v0, 4                  # 4 - Print string
         la      $a0, info               # Load in the other info (time, date, pump #, etc.)
         syscall                         # Print out the info
-
-        # Amount of gas
-        li      $v0, 4                  # 4 - Print string
-        la      $a0, gal                # Load in the amount of gal (# of gallons) label string
-        syscall                         # Print out the gallon amount label
-
-        li      $v0, 2                  # 2 - Print float (single)
-        mov.s   $f12, $f4               # Load in the amount of gas
-        syscall                         # Print the amount of gas
 
 
         li      $t0, 'r'
@@ -453,6 +466,15 @@ iPriceGal:
         mov.s   $f12, $f7               # Load in final price/gal as first fl. pt. argument to moneyPrint
         jal     moneyPrint              # Prints out the price/gal with nice formatting
 
+        # Amount of gas
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, gal                # Load in the amount of gal (# of gallons) label string
+        syscall                         # Print out the gallon amount label
+
+        li      $v0, 2                  # 2 - Print float (single)
+        mov.s   $f12, $f4               # Load in the amount of gas
+        syscall                         # Print the amount of gas
+
 
         # Total cost
         li      $v0, 4                  # 4 - Print string
@@ -460,7 +482,17 @@ iPriceGal:
         syscall                         # Print out the label
 
         li      $a0, 0                  # Load in 0 as the first "word" argument to moneyPrint (signifies rounding to 100th instead of 1000th)
-        mov.s   $f12, $f8               # Load in the total price to print out as first fl. pt. argument to moneyPrint
+        mov.s   $f12, $f8               # Load in the total price to print out, as first fl. pt. argument to moneyPrint
+        jal     moneyPrint              # Prints out the total price with nice formatting
+
+
+        # Amount saved (total discount)
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, tDisc              # Load in the total discount label string
+        syscall                         # Print out the label
+
+        li      $a0, 0                  # Load in 0 as the first "word" argument to moneyPrint (signifies rounding to 100th instead of 1000th)
+        mov.s   $f12, $f9               # Load in the total discount to print out, as first fl. pt. argument to moneyPrint
         jal     moneyPrint              # Prints out the total price with nice formatting
 
 
@@ -484,17 +516,17 @@ sPayPaid:
 
 
 amtPaid:
+        # Amount paid
         li      $v0, 4                  # 4 - Print string
         la      $a0, paid               # Load in the amount paid label string
         syscall                         # Print out the label
 
         li      $a0, 0                  # Load in 0 as the first "word" argument to moneyPrint (signifies rounding to 100th instead of 1000th)
-        mov.s   $f12, $f8               # Load in the total price to print out as first fl. pt. argument to moneyPrint
+        mov.s   $f12, $f8               # Load in the total price to print out, as first fl. pt. argument to moneyPrint
         jal     moneyPrint              # Prints out the total price with nice formatting as the amount "paid"
 
 
-
-
+        # Change due
         li      $v0, 4                  # 4 - Print string
         la      $a0, change             # Load in the change due label string
         syscall                         # Print out the label
@@ -504,16 +536,19 @@ amtPaid:
         jal     moneyPrint              # Prints out the change due with nice formatting
 
 
-
-
+        # Footer info
         li      $v0, 4                  # 4 - Print string
         la      $a0, footer             # Load in the footer info (all the "thank you" jargon)
         syscall                         # Print out the footer
 
+
+        # Ending bar
         li      $v0, 4                  # 4 - Print string
         la      $a0, bar                # Load in the bar of dashes
         syscall                         # Print out the bar
 
+
+        # Extra endline for good luck
         li      $v0, 4                  # 4 - Print string
         la      $a0, endl               # Load in the endline character
         syscall                         # Print the endline
