@@ -89,24 +89,16 @@ fibRecur:
         sw      $fp, 8($sp)             # Save the old frame pointer
         addu    $fp, $sp, 28            # Set frame pointer to new location relative to stack pointer
 
-        li      $t4, 0                  # Load in 0 for comparison (could have been done with $zero as too)
-        beq     $a0, $t4, zero          # if ($a0 == 0) jump to "zero" label
+        li      $t0, -1                 # Load in the sentinel value for an un-memoized value
+        sll     $t2, $a0, 2             # Index into memo array is the argument $a0 * 4
+        lw      $t1, memo($t2)          # Load in the memoized value
 
-        li      $t4, 1                  # Load in 1 for comparison
-        beq     $a0, $t4, one           # if ($a0 == 1) jump to "one" label
+        beq     $t0, $t1, calcFib       # If the memoized array value is the sentinel, the value hasn't been memoized
 
-        j       else                    # Jump to "else" label
+        j       loadFib
 
-zero:
-        li      $v0, 0
-        j       fibRecur_done
-
-one:
-        li      $v0, 1
-        j       fibRecur_done
-
-else:
-        sw      $a0, -12($fp)           # Store the first argument argument
+calcFib:
+        sw      $a0, -12($fp)           # Store the first argument
         sw      $a1, -8($fp)            # Store the second argument
         subu    $a0, $a0, 1             # Create first new argument (n-1)
         jal     fibRecur                # F(n-1) - Arguments go in as $a0 and $a1, answer comes back in $v0
@@ -119,7 +111,14 @@ else:
         move    $t0, $v0                # Move the second result for addition
 
         lw      $t1, -4($fp)            # Load the first result F(n-1) for addition
-        add     $v0, $t0, $t1           # Perform the addition of F(n-1) and F(n-2), and put the result in $
+        add     $v0, $t0, $t1           # Perform the addition of F(n-1) and F(n-2), and put the result in $v0
+
+        j       fibRecur_done
+        
+loadFib:
+        move    $v0, $t1                # Move the loaded fibonacci number from $t1 for returning
+
+        j       fibRecur_done
 
 fibRecur_done:
         lw      $ra, 12($sp)            # Restore old return address value
@@ -149,7 +148,7 @@ fib:
         li      $t1, 0                  # Load in 0 as offset into memo array
         sw      $t0, memo($t1)          # Store 0 as F0
         li      $t0, 1                  # Load in 1 as the F1 in memo array
-        li      $t1, 0                  # Load in 4 as offset into memo array
+        li      $t1, 4                  # Load in 4 as offset into memo array
         sw      $t0, memo($t1)          # Store 1 as F1
 
         jal     fibRecur
