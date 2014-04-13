@@ -8,30 +8,61 @@
 # Output:       
 
 
+
+# Stack Set-Up:
+#       sp      fp      use             typically
+# sp -> 0       -28     empty
+#       4       -24     empty
+#       8       -20     fp              $fp
+#       12      -16     ra              $ra
+#       16      -12     local0          $a0
+#       20      -8      local1          $a1
+#       24      -4      local2
+# fp -> 28      -0      local3
+# Caller's stack:
+# oldsp 32       4
+
         .data
 prompt: .asciiz "Enter how far in the fibonacci sequence to go: "
+memo:   .word   -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 # Array of length 44
 fin:    .asciiz "\n\nFinished. Bye."
 endl:   .asciiz "\n"
 
         .text
         .globl main
 main:
-        li      $v0, 4
-        la      $a0, prompt
-        syscall
+        j       after_reset
+
+        li      $t0, 0                  # Start index
+        li      $t2, 44                 # End index
+
+reset_loop:
+        beq     $t0, $t2, after_reset   # If start == end, jump to after loop
+
+        sll     $t1, $t0, 2             # $t1 is the index multiplied by 4 (for memory "word" accessing)
+        sw      $zero, memo($t1)        # Set the array at $t1 (aka at $t0) to 0
+
+        addu    $t0, $t0, 1             # Increment array index
+
+        j       reset_loop              # Jump back to loop
+
+after_reset:
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, prompt             # Load in the "Enter a value" prompt
+        syscall                         # Print out the prompt
 
         li      $v0, 5                  # 5 - Read integer
-        syscall
-        move    $a0, $v0
+        syscall                         # Read in the integer, n, for how many fibonacci numbers
+        move    $a0, $v0                # Move the input number as the first argument to 'fib' procedure call
 
-        # li      $a0, 3
-        jal     fib
+        la      $a1, memo               # Load in the memo array as second argument
+        jal     fib                     # Call 'fib' procedure
 
-        move    $t0, $v0
+        move    $t0, $v0                # Move the answer (nth fibonacci number) to $t0
 
-        li      $v0, 1
-        move    $a0, $t0
-        syscall
+        li      $v0, 1                  # 1 - Print integer
+        move    $a0, $t0                # Load in the nth fibonacci number
+        syscall                         # Print out the answer
 
 done:
         li      $v0, 4                  # 4 - Print string
@@ -40,6 +71,62 @@ done:
         
         li      $v0, 10                 # 10 - Exit
         syscall                         # Exit the system
+
+# -------------------------------------------------------------------- #
+
+# Procedure: fibRecur
+
+# Purpose:
+# Parameters:
+# Returns:
+
+        .data
+
+        .text
+fibRecur:
+        subu    $sp, $sp, 32            # Shift stack pointer to new location
+        sw      $ra, 12($sp)            # Save the old return address
+        sw      $fp, 8($sp)             # Save the old frame pointer
+        addu    $fp, $sp, 28            # Set frame pointer to new location relative to stack pointer
+
+        li      $t4, 0                  # Load in 0 for comparison (could have been done with $zero as too)
+        beq     $a0, $t4, zero          # if ($a0 == 0) jump to "zero" label
+
+        li      $t4, 1                  # Load in 1 for comparison
+        beq     $a0, $t4, one           # if ($a0 == 1) jump to "one" label
+
+        j       else                    # Jump to "else" label
+
+zero:
+        li      $v0, 0
+        j       fibRecur_done
+
+one:
+        li      $v0, 1
+        j       fibRecur_done
+
+else:
+        sw      $a0, -12($fp)           # Store the first argument argument
+        sw      $a1, -8($fp)            # Store the second argument
+        subu    $a0, $a0, 1             # Create first new argument (n-1)
+        jal     fibRecur                # F(n-1) - Arguments go in as $a0 and $a1, answer comes back in $v0
+        sw      $v0, -4($fp)            # Save the first result
+
+        lw      $a0, -12($fp)           # Replace the (possibly) altered a0 with the stack-stored one
+        lw      $a1, -8($fp)            # Replace the (possibly) altered a1 with the stack-stored one
+        subu    $a0, $a0, 2             # Create next new argument (n-2)
+        jal     fibRecur                # F(n-2) - Arguments go in as $a0 and $a1, answer comes back in $v0
+        move    $t0, $v0                # Move the second result for addition
+
+        lw      $t1, -4($fp)            # Load the first result F(n-1) for addition
+        add     $v0, $t0, $t1           # Perform the addition of F(n-1) and F(n-2), and put the result in $
+
+fibRecur_done:
+        lw      $ra, 12($sp)            # Restore old return address value
+        lw      $fp, 8($sp)             # Restore old frame pointer
+        addu    $sp, $sp, 32            # Shift stack pointer back to old location
+
+        j       $ra                     # Return to caller
 
 # -------------------------------------------------------------------- #
 
@@ -54,44 +141,22 @@ done:
         .text
 fib:
         subu    $sp, $sp, 32            # Shift stack pointer to new location
-        sw      $ra, 20($sp)            # Save the old return address
-        sw      $fp, 16($sp)            # Save the old frame pointer
+        sw      $ra, 12($sp)            # Save the old return address
+        sw      $fp, 8($sp)             # Save the old frame pointer
         addu    $fp, $sp, 28            # Set frame pointer to new location relative to stack pointer
 
-        li      $t4, 0
-        beq     $a0, $t4, zero
+        li      $t0, 0                  # Load in 0 as the F0 in memo array
+        li      $t1, 0                  # Load in 0 as offset into memo array
+        sw      $t0, memo($t1)          # Store 0 as F0
+        li      $t0, 1                  # Load in 1 as the F1 in memo array
+        li      $t1, 0                  # Load in 4 as offset into memo array
+        sw      $t0, memo($t1)          # Store 1 as F1
 
-        li      $t4, 1
-        beq     $a0, $t4, one
-
-        j       else
-
-zero:
-        li      $v0, 0
-        j       fib_done
-
-one:
-        li      $v0, 1
-        j       fib_done
-
-else:
-        # Store local variable(s) on stack
-        sw      $a0, -4($fp)            # Store the old argument
-        subu    $a0, $a0, 1             # Create new argument
-        jal     fib                     # F(n-1) - Argument goes in as $a0, answer comes back in $v0
-        sw      $v0, 0($fp)             # Save the first result
-
-        lw      $a0, -4($fp)            # Replace the (possibly) altered a0 with the stack-stored one
-        subu    $a0, $a0, 2
-        jal     fib                     # F(n-2) - Argument goes in as $a0, answer comes back in $v0
-        move    $t0, $v0                # Move the second result for addition
-
-        lw      $t1, 0($fp)             # Load the first result F(n-1) for addition
-        add     $v0, $t0, $t1           # Perform the addition of F(n-1) and F(n-2), and put the result in $v0
+        jal     fibRecur
 
 fib_done:
-        lw      $ra, 20($sp)            # Restore old return address value
-        lw      $fp, 16($sp)            # Restore old frame pointer
+        lw      $ra, 12($sp)            # Restore old return address value
+        lw      $fp, 8($sp)             # Restore old frame pointer
         addu    $sp, $sp, 32            # Shift stack pointer back to old location
 
         j       $ra                     # Return to caller
