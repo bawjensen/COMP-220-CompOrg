@@ -28,28 +28,29 @@
 prompt: .asciiz "Enter how far in the fibonacci sequence to go: "
 # Array of length 45, filled with sentinel value
 memo:   .word   -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
-fin:    .asciiz "\n\nFinished. Bye."
+sum:    .asciiz "The sum of the fibonacci numbers is: "
+fin:    .asciiz "\n\nBuh bye."
 endl:   .asciiz "\n"
 
         .text
         .globl main
 main:
-        j       after_reset
+        j       resetLoop_after
 
         li      $t0, 0                  # Start index
         li      $t2, 44                 # End index
 
-reset_loop:
-        beq     $t0, $t2, after_reset   # If start == end, jump to after loop
+resetLoop:
+        beq     $t0, $t2, resetLoop_after # If start == end, jump to after loop
 
         sll     $t1, $t0, 2             # $t1 is the index multiplied by 4 (for memory "word" accessing)
         sw      $zero, memo($t1)        # Set the array at $t1 (aka at $t0) to 0
 
         addu    $t0, $t0, 1             # Increment array index
 
-        j       reset_loop              # Jump back to loop
+        j       resetLoop               # Jump back to loop
 
-after_reset:
+resetLoop_after:
         li      $v0, 4                  # 4 - Print string
         la      $a0, prompt             # Load in the "Enter a value" prompt
         syscall                         # Print out the prompt
@@ -61,7 +62,11 @@ after_reset:
         la      $a1, memo               # Load in the memo array as second argument
         jal     fib                     # Call 'fib' procedure
 
-        move    $t0, $v0                # Move the answer (nth fibonacci number) to $t0
+        move    $t0, $v0                # Move the answer (sum of n fibonacci numbers) to $t0
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, sum                # Load in the "Sum is: " string
+        syscall                         # Print out the sum label
 
         li      $v0, 1                  # 1 - Print integer
         move    $a0, $t0                # Load in the nth fibonacci number
@@ -94,7 +99,7 @@ fibRecur:
 
         li      $t0, -1                 # Load in the sentinel value for an un-memoized value
         sll     $t2, $a0, 2             # Index into memo array is the argument $a0 * 4
-        add     $t2, $t2, $a1           # Manually perform array pointer addition into memo array
+        add     $t2, $t2, $a1           # Manually perform array pointer addition into memo array ($a1)
         lw      $t1, 0($t2)             # Load in the memoized value
 
         beq     $t0, $t1, calcFib       # If the memoized array value is the sentinel, the value hasn't been memoized
@@ -108,26 +113,19 @@ calcFib:
         jal     fibRecur                # F(n-1) - Arguments go in as $a0 and $a1, answer comes back in $v0
         sw      $v0, -4($fp)            # Save the first result in stack
 
-        lw      $a0, -12($fp)           # Grab $a0 from the stack for memo array storage
-        subu    $a0, $a0, 1             # $a0 = $a0 - 1
-        sll     $a0, $a0, 2             # Convert $a0 to a byte offset amount
-        add     $a0, $a0, $a1           # Manually perform array pointer addition into memo array
-        sw      $v0, 0($a0)             # Store the first result into the memo array for later
-
         lw      $a0, -12($fp)           # Replace the (possibly) altered a0 with the stack-stored one
         lw      $a1, -8($fp)            # Replace the (possibly) altered a1 with the stack-stored one
         subu    $a0, $a0, 2             # Create next new argument (n-2)
         jal     fibRecur                # F(n-2) - Arguments go in as $a0 and $a1, answer comes back in $v0
         move    $t0, $v0                # Move the second result for addition
 
-        lw      $a0, -12($fp)           # Grab $a0 from the stack for memo array storage
-        subu    $a0, $a0, 2             # $a0 = $a0 - 2
-        sll     $a0, $a0, 2             # Convert $a0 to a byte offset amount
-        add     $a0, $a0, $a1           # Manually perform array pointer addition into memo array
-        sw      $v0, 0($a0)             # Store the second result into the memo array for later
-
         lw      $t1, -4($fp)            # Load the first result F(n-1) from stack for addition
         add     $v0, $t0, $t1           # Perform the addition of F(n-1) and F(n-2), and put the result in $v0
+
+        lw      $a0, -12($fp)           # Grab $a0 from the stack for memo array storage
+        sll     $t3, $a0, 2             # Convert argument into index byte offset amount
+        add     $t3, $t3, $a1           # Manually perform array pointer addition, indexing into memo array ($a1)
+        sw      $v0, 0($t3)             # Store the result into the memo array
 
         j       fibRecur_done
         
@@ -152,6 +150,8 @@ fibRecur_done:
 # Returns:
 
         .data
+dDelim: .asciiz ": "
+sDelim: .asciiz ":  "
 
         .text
 fib:
@@ -161,13 +161,71 @@ fib:
         addu    $fp, $sp, 28            # Set frame pointer to new location relative to stack pointer
 
         li      $t0, 0                  # Load in 0 as the F0 in memo array
-        addi    $t1, $a1, 0             # Manually perform array offset addition (memo in $a0 + 0 byte offset)
+        addi    $t1, $a1, 0             # Manually perform array offset addition (memo in $a1 + 0 byte offset)
         sw      $t0, 0($t1)             # Store 0 as F0
         li      $t0, 1                  # Load in 1 as the F1 in memo array
-        addi    $t1, $a1, 4             # Manually perform array offset addition (memo in $a0 + 4 byte offset)
+        addi    $t1, $a1, 4             # Manually perform array offset addition (memo in $a1 + 4 byte offset)
         sw      $t0, 0($t1)             # Store 1 as F1
 
-        jal     fibRecur
+        sw      $a0, -12($fp)           # Store the first argument
+        sw      $a1, -8($fp)            # Store the second argument
+
+        jal     fibRecur                # The pointer to the array (in $a1) will have the fib values filled out
+
+        lw      $a0, -12($fp)           # Load the first argument back
+        move    $t2, $a0                # Move the first argument to $t2 to be the index incrementer
+        li      $s0, 0                  # Set up register for "sum" of fib's
+
+outputLoop:                             # Looping from n (the input value) down to 0, computing sum and outputting values
+        beq     $t2, $zero, outputLoop_after # If at 0, break
+
+        sll     $t1, $t2, 2             # Convert $t2 into byte offset amount, store in $t1
+        add     $t1, $a1, $t1           # Manually perform array pointer offset addition in memo array ($a1)
+
+        lw      $t0, 0($t1)             # Load up value from the memo array at the computed index
+
+        li      $v0, 1                  # 1 - Print int
+        move    $a0, $t2                # Load up the index number
+        syscall                         # Print out the index number
+
+        li      $t4, 10                 # Comparison value for double-digit numbers (alignment issues)
+        blt     $t2, $t4, single        # If less than 10, jump to single digit handler
+
+        j       double
+
+single:
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, sDelim             # Load in the delimiter string
+        syscall                         # Print out the delimiter
+
+        j       singDoub_after
+
+double:
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, dDelim             # Load in the delimiter string
+        syscall                         # Print out the delimiter
+
+        j       singDoub_after
+
+singDoub_after:
+
+        li      $v0, 1                  # 1 - Print int
+        move    $a0, $t0                # Load up the fib value, moving from $t0
+        syscall                         # Print out the fib value
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, endl               # Load in the endline string
+        syscall                         # Print out the endline
+
+        add     $s0, $s0, $t0           # Add the fib value onto the sum
+
+        subu    $t2, $t2, 1             # Decrement the index
+        j       outputLoop              # Jump back to loop
+
+outputLoop_after:
+        move    $v0, $s0                # Move the sum as the return value for the overall procedure
 
 fib_done:
         lw      $ra, 12($sp)            # Restore old return address value
