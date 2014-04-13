@@ -103,7 +103,7 @@ uInput:
         subu    $sp, $sp, 32            # Shift stack pointer to new location
         sw      $ra, 20($sp)            # Save the old return address
         sw      $fp, 16($sp)            # Save the old frame pointer
-        addu    $fp, $fp, 28            # Shift frame pointer to new location relative to stack pointer
+        addu    $fp, $sp, 28            # Shift frame pointer to new location relative to stack pointer
 
 
         li      $v0, 4                  # 4 - Print string
@@ -169,7 +169,7 @@ calcGas:
         subu    $sp, $sp, 32            # Shift stack pointer to new location
         sw      $ra, 20($sp)            # Save the old return address
         sw      $fp, 16($sp)            # Save the old frame pointer
-        addu    $fp, $fp, 28            # Shift frame pointer to new location relative to stack pointer
+        addu    $fp, $sp, 28            # Shift frame pointer to new location relative to stack pointer
 
 
         li      $t0, 'r'                # Load the comparison value - testing for regular gas
@@ -233,7 +233,7 @@ moneyPrint:
         subu    $sp, $sp, 32            # Shift stack pointer to new location
         sw      $ra, 20($sp)            # Save the old return address
         sw      $fp, 16($sp)            # Save the old frame pointer
-        addu    $fp, $fp, 28            # Shift frame pointer to new location relative to stack pointer
+        addu    $fp, $sp, 28            # Shift frame pointer to new location relative to stack pointer
 
         mov.s   $f10, $f12              # Move the float used for formatted printing to a more convienent register
         move    $t0, $a0                # Move the boolean (signifying rounding precision) to a more convienent register
@@ -393,7 +393,7 @@ printReceipt:
         subu    $sp, $sp, 32            # Shift stack pointer to new location
         sw      $ra, 20($sp)            # Save the old return address
         sw      $fp, 16($sp)            # Save the old frame pointer
-        addu    $fp, $fp, 28            # Shift frame pointer to new location relative to stack pointer
+        addu    $fp, $sp, 28            # Shift frame pointer to new location relative to stack pointer
 
         li      $v0, 4                  # 4 - Print string
         la      $a0, bar                # Load in the bar of dashes
