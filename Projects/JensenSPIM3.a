@@ -11,6 +11,7 @@
 
 # Stack Set-Up:
 #       sp      fp      use             typically
+#       --      --      ---             ---------
 # sp -> 0       -28     empty
 #       4       -24     empty
 #       8       -20     fp              $fp
@@ -19,12 +20,14 @@
 #       20      -8      local1          $a1
 #       24      -4      local2
 # fp -> 28      -0      local3
+
 # Caller's stack:
 # oldsp 32       4
 
         .data
 prompt: .asciiz "Enter how far in the fibonacci sequence to go: "
-memo:   .word   -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 # Array of length 44
+# Array of length 45, filled with sentinel value
+memo:   .word   -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 fin:    .asciiz "\n\nFinished. Bye."
 endl:   .asciiz "\n"
 
@@ -91,7 +94,8 @@ fibRecur:
 
         li      $t0, -1                 # Load in the sentinel value for an un-memoized value
         sll     $t2, $a0, 2             # Index into memo array is the argument $a0 * 4
-        lw      $t1, memo($t2)          # Load in the memoized value
+        add     $t2, $t2, $a1           # Manually perform array pointer addition into memo array
+        lw      $t1, 0($t2)             # Load in the memoized value
 
         beq     $t0, $t1, calcFib       # If the memoized array value is the sentinel, the value hasn't been memoized
 
@@ -102,7 +106,13 @@ calcFib:
         sw      $a1, -8($fp)            # Store the second argument
         subu    $a0, $a0, 1             # Create first new argument (n-1)
         jal     fibRecur                # F(n-1) - Arguments go in as $a0 and $a1, answer comes back in $v0
-        sw      $v0, -4($fp)            # Save the first result
+        sw      $v0, -4($fp)            # Save the first result in stack
+
+        lw      $a0, -12($fp)           # Grab $a0 from the stack for memo array storage
+        subu    $a0, $a0, 1             # $a0 = $a0 - 1
+        sll     $a0, $a0, 2             # Convert $a0 to a byte offset amount
+        add     $a0, $a0, $a1           # Manually perform array pointer addition into memo array
+        sw      $v0, 0($a0)             # Store the first result into the memo array for later
 
         lw      $a0, -12($fp)           # Replace the (possibly) altered a0 with the stack-stored one
         lw      $a1, -8($fp)            # Replace the (possibly) altered a1 with the stack-stored one
@@ -110,7 +120,13 @@ calcFib:
         jal     fibRecur                # F(n-2) - Arguments go in as $a0 and $a1, answer comes back in $v0
         move    $t0, $v0                # Move the second result for addition
 
-        lw      $t1, -4($fp)            # Load the first result F(n-1) for addition
+        lw      $a0, -12($fp)           # Grab $a0 from the stack for memo array storage
+        subu    $a0, $a0, 2             # $a0 = $a0 - 2
+        sll     $a0, $a0, 2             # Convert $a0 to a byte offset amount
+        add     $a0, $a0, $a1           # Manually perform array pointer addition into memo array
+        sw      $v0, 0($a0)             # Store the second result into the memo array for later
+
+        lw      $t1, -4($fp)            # Load the first result F(n-1) from stack for addition
         add     $v0, $t0, $t1           # Perform the addition of F(n-1) and F(n-2), and put the result in $v0
 
         j       fibRecur_done
@@ -145,11 +161,11 @@ fib:
         addu    $fp, $sp, 28            # Set frame pointer to new location relative to stack pointer
 
         li      $t0, 0                  # Load in 0 as the F0 in memo array
-        li      $t1, 0                  # Load in 0 as offset into memo array
-        sw      $t0, memo($t1)          # Store 0 as F0
+        addi    $t1, $a1, 0             # Manually perform array offset addition (memo in $a0 + 0 byte offset)
+        sw      $t0, 0($t1)             # Store 0 as F0
         li      $t0, 1                  # Load in 1 as the F1 in memo array
-        li      $t1, 4                  # Load in 4 as offset into memo array
-        sw      $t0, memo($t1)          # Store 1 as F1
+        addi    $t1, $a1, 4             # Manually perform array offset addition (memo in $a0 + 4 byte offset)
+        sw      $t0, 0($t1)             # Store 1 as F1
 
         jal     fibRecur
 
