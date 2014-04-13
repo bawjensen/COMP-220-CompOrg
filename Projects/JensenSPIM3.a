@@ -1,0 +1,90 @@
+# Bryan Jensen
+# April 12, 2014
+#
+# Description:  
+#
+# Input:        
+#
+# Output:       
+
+
+        .data
+fin:    .asciiz "\n\nFinished. Bye."
+endl:   .asciiz "\n"
+
+        .text
+        .globl main
+main:
+
+        li      $a0, 2
+        jal     fib
+
+        move    $t0, $v0
+
+        li      $v0, 1
+        move    $a0, $t0
+        syscall
+
+done:
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, fin                # Load goodbye prompt
+        syscall                         # Print out prompt
+        
+        li      $v0, 10                 # 10 - Exit
+        syscall                         # Exit the system
+
+# -------------------------------------------------------------------- #
+
+# Procedure: fib
+
+# Purpose:
+# Parameters:
+# Returns:
+
+        .data
+
+        .text
+fib:
+        subu    $sp, $sp, 32            # Shift stack pointer to new location
+        sw      $ra, 20($sp)            # Save the old return address
+        sw      $fp, 16($sp)            # Save the old frame pointer
+        addu    $fp, $sp, 28            # Set frame pointer to new location relative to stack pointer
+
+        li      $t4, 0
+        beq     $a0, $t4, zero
+
+        li      $t4, 1
+        beq     $a0, $t4, one
+
+        j       else
+
+zero:
+        li      $v0, 0
+        j       fib_done
+
+one:
+        li      $v0, 1
+        j       fib_done
+
+else:
+        # Store local variable(s) on stack
+        sw      $a0, -4($fp)             # Same as 28($sp)
+        sw      $a0, -4($fp)            # save argument (5); same as  24($sp)
+        # move    $a0, $a0
+        jal     fib                     # F(n-1) - Argument goes in as $a0, answer comes back in $v0
+        sw      $v0, 0($fp)             # Save the first result
+
+        lw      $a0, -4($fp)             # Replace the (possibly) altered a0 with the stack-stored one
+        jal     fib                     # F(n-2) - Argument goes in as $a0, answer comes back in $v0
+        move    $v0, $t0                # Move the second result for addition
+
+        lw      $t1, 0($fp)             # Load the first result F(n-1) for addition
+        add     $v0, $t0, $t1           # Perform the addition of F(n-1) and F(n-2), and put the result in $v0
+
+fib_done:
+        lw      $ra, 20($sp)            # Restore old return address value
+        lw      $fp, 16($sp)            # Restore old frame pointer
+        addu    $sp, $sp, 32            # Shift stack pointer back to old location
+
+        j       $ra                     # Return to caller
+
