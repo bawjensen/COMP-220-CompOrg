@@ -17,7 +17,7 @@
 #       8       -20     fp              $fp
 #       12      -16     ra              $ra
 #       16      -12     local0          $a0
-#       20      -8      local1          $a1
+#       20      -8      local1
 #       24      -4      local2
 # fp -> 28      -0      local3
 
@@ -79,41 +79,28 @@ fibRecur:
         sw      $fp, 8($sp)             # Save the old frame pointer
         addu    $fp, $sp, 28            # Set frame pointer to new location relative to stack pointer
 
-        li      $t0, -1                 # Load in the sentinel value for an un-memoized value
-        sll     $t2, $a0, 2             # Index into memo array is the argument $a0 * 4
-        add     $t2, $t2, $a1           # Manually perform array pointer addition into memo array ($a1)
-        lw      $t1, 0($t2)             # Load in the memoized value
+        li      $t0, 0
+        beq     $a0, $t0, zero
 
-        beq     $t0, $t1, calcFib       # If the memoized array value is the sentinel, the value hasn't been memoized
+        li      $t0, 1
+        beq     $a0, $t0, one
 
-        j       loadFib
-
-calcFib:
         sw      $a0, -12($fp)           # Store the first argument
-        sw      $a1, -8($fp)            # Store the second argument
         subu    $a0, $a0, 1             # Create first new argument (n-1)
-        jal     fibRecur                # F(n-1) - Arguments go in as $a0 and $a1, answer comes back in $v0
-        sw      $v0, -4($fp)            # Save the first result in stack
+        jal     fibRecur                # F(n-1) - Arguments go in as $a0, answer comes back in $v0 and $v1
 
-        lw      $a0, -12($fp)           # Replace the (possibly) altered a0 with the stack-stored one
-        lw      $a1, -8($fp)            # Replace the (possibly) altered a1 with the stack-stored one
-        subu    $a0, $a0, 2             # Create next new argument (n-2)
-        jal     fibRecur                # F(n-2) - Arguments go in as $a0 and $a1, answer comes back in $v0
-        move    $t0, $v0                # Move the second result for addition
-
-        lw      $t1, -4($fp)            # Load the first result F(n-1) from stack for addition
-        add     $v0, $t0, $t1           # Perform the addition of F(n-1) and F(n-2), and put the result in $v0
-
-        lw      $a0, -12($fp)           # Grab $a0 from the stack for memo array storage
-        sll     $t3, $a0, 2             # Convert argument into index byte offset amount
-        add     $t3, $t3, $a1           # Manually perform array pointer addition, indexing into memo array ($a1)
-        sw      $v0, 0($t3)             # Store the result into the memo array
-
+        move    $t0, $v1
+        add     $v1, $v0, $v1
+        move    $v0, $t0
         j       fibRecur_done
-        
-loadFib:
-        move    $v0, $t1                # Move the loaded fibonacci number from $t1 for returning
 
+zero:
+        li      $v0, 0
+        j       fibRecur_done
+
+one:
+        li      $v0, 0
+        li      $v1, 1
         j       fibRecur_done
 
 fibRecur_done:
@@ -142,7 +129,8 @@ fib:
 
         sw      $a0, -12($fp)           # Store the first argument
 
-        jal     fibRecur                # The pointer to the array (in $a1) will have the fib values filled out
+        jal     fibRecur                # F(n) - Arguments go in as $a0, answer comes back in $v0 and $v1
+        move    $v0, $v1
 
         lw      $a0, -12($fp)           # Load the first argument back
 
