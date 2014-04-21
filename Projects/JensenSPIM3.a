@@ -1,13 +1,14 @@
 # Bryan Jensen
 # April 12, 2014
 #
-# Description:  
+# Description:  A simple program to ask the user for input in the form of a number, n, and from that number
+#               to calculate the sum of the first n fibonacci numbers while printing out every fibonacci
+#               number along the way, in reverse (a.k.a. descending) order.
 #
-# Input:        
+# Input:        One integer, in the range 0 <= n <= 44. Negative is illogical, and >44 generates overflow.
 #
-# Output:       
-
-
+# Output:       The list of the first n fibonacci numbers, in descending order, as well as the sum of the
+#               first n fibonacci numbers, shown at the end, with minimal formatting.
 
 # Stack Set-Up:
 #       sp      fp      use             typically
@@ -16,19 +17,15 @@
 #       4       -24     empty
 #       8       -20     fp              $fp
 #       12      -16     ra              $ra
-#       16      -12     local0          $a0
+#       16      -12     local0          $a1
 #       20      -8      local1
 #       24      -4      local2
 # fp -> 28      -0      local3
 
-# Caller's stack:
-# oldsp 32       4
-
         .data
 prompt: .asciiz "Enter how far in the fibonacci sequence to go: "
-# Array of length 45, filled with sentinel value
 sum:    .asciiz "The sum of the fibonacci numbers is "
-fin:    .asciiz "\n\nFinished, terminating."
+fin:    .asciiz ".\n\nFinished, terminating.\n"
 endl:   .asciiz "\n"
 
         .text
@@ -40,7 +37,10 @@ main:
 
         li      $v0, 5                  # 5 - Read integer
         syscall                         # Read in the integer, n, for how many fibonacci numbers
-        move    $a0, $v0                # Move the input number as the first argument to 'fib' procedure call
+        move    $a0, $v0                # Move the input number as the first argument (i) to 'fib' procedure call
+
+        li      $a1, 1                  # Load in 1 as v1
+        li      $a2, 1                  # Load in 1 as v2
 
         jal     fib                     # Call 'fib' procedure
 
@@ -64,62 +64,18 @@ done:
 
 # -------------------------------------------------------------------- #
 
-# Procedure: fibRecur
-
-# Purpose:
-# Parameters:
-# Returns:
-
-        .data
-
-        .text
-fibRecur:
-        subu    $sp, $sp, 32            # Shift stack pointer to new location
-        sw      $ra, 12($sp)            # Save the old return address
-        sw      $fp, 8($sp)             # Save the old frame pointer
-        addu    $fp, $sp, 28            # Set frame pointer to new location relative to stack pointer
-
-        li      $t0, 0
-        beq     $a0, $t0, zero
-
-        li      $t0, 1
-        beq     $a0, $t0, one
-
-        sw      $a0, -12($fp)           # Store the first argument
-        subu    $a0, $a0, 1             # Create first new argument (n-1)
-        jal     fibRecur                # F(n-1) - Arguments go in as $a0, answer comes back in $v0 and $v1
-
-        move    $t0, $v1
-        add     $v1, $v0, $v1
-        move    $v0, $t0
-        j       fibRecur_done
-
-zero:
-        li      $v0, 0
-        j       fibRecur_done
-
-one:
-        li      $v0, 0
-        li      $v1, 1
-        j       fibRecur_done
-
-fibRecur_done:
-        lw      $ra, 12($sp)            # Restore old return address value
-        lw      $fp, 8($sp)             # Restore old frame pointer
-        addu    $sp, $sp, 32            # Shift stack pointer back to old location
-
-        j       $ra                     # Return to caller
-
-# -------------------------------------------------------------------- #
-
 # Procedure: fib
 
-# Purpose:
-# Parameters:
-# Returns:
+# Purpose: Recursively calculates the sum of the next 'i' fibonacci sequence, starting with the initial values
+#          v1 and v2. For example, if 1 and 1 are input as v1 and v2, respectively, with an i = 2, then the sum 
+#          will be 1 + 1 = 2. But if the starting point is farther along, say v1 = 5, v2 = 8, and an i = 2, 
+#          then the sum will be 5 + 8 = 13, and an i of 3 with the same start would give 5 + 8 + 13 = 26.
+# Parameters: $a0: i    (the number of recursions left to do)
+#             $a1: v1   (the nth fibonacci number)
+#             $a1: v2   (the (n+1)th fibonacci number)
+# Returns: $v0, the sum of the next 'i' fibonacci numbers based off of F(1) = v1, F(2) = v2.
 
         .data
-
         .text
 fib:
         subu    $sp, $sp, 32            # Shift stack pointer to new location
@@ -127,12 +83,37 @@ fib:
         sw      $fp, 8($sp)             # Save the old frame pointer
         addu    $fp, $sp, 28            # Set frame pointer to new location relative to stack pointer
 
-        sw      $a0, -12($fp)           # Store the first argument
+        sw      $a1, -12($fp)           # Store v1 onto stack
 
-        jal     fibRecur                # F(n) - Arguments go in as $a0, answer comes back in $v0 and $v1
-        move    $v0, $v1
+        beq     $a0, $zero, base_case   # Base case = end of recursion
+        j       recursion               # Otherwise, recurse
 
-        lw      $a0, -12($fp)           # Load the first argument back
+base_case:
+        li      $v0, 0                  # End of recursion - return sum of 0
+        j       fib_done                # Done, return
+
+recursion:
+        subu    $a0, $a0, 1             # i = i - 1
+        add     $t0, $a1, $a2           # temp = v1 + v2
+        move    $a1, $a2                # v1 = v2
+        move    $a2, $t0                # v2 = temp
+
+        jal     fib                     # Recursive call: val = F(i, v1, v2) [a.k.a. F(i-1, v2, v1+v2)]
+
+        move    $t0, $v0                # temp0 = val
+        lw      $t1, -12($fp)           # temp1 = v1 (from stack)
+
+        li      $v0, 1                  # 1 - Print int
+        move    $a0, $t1                # Load in the fibonacci number (= temp1 = v1)
+        syscall                         # Print the fib number
+
+        li      $v0, 4                  # 4 - Print string
+        la      $a0, endl               # Load in the '\n'
+        syscall                         # Print the endline
+
+        add     $v0, $t0, $t1           # return (temp0 + temp1) [a.k.a. (val + v1)]
+
+        j       fib_done                # Done, return
 
 fib_done:
         lw      $ra, 12($sp)            # Restore old return address value
@@ -140,4 +121,3 @@ fib_done:
         addu    $sp, $sp, 32            # Shift stack pointer back to old location
 
         j       $ra                     # Return to caller
-
