@@ -45,8 +45,9 @@ ALUControl aluControl;
 ALU alu;
 ShiftLeftTwo shiftLeftTwo;
 ALUAdd aluAdd;
-Multiplexor multiplexor;
 ProgramControl programControl;
+Multiplexer1 mux1;
+Multiplexer2 mux2;
 
 // -------------------------------------------------------------------------------------------
 
@@ -248,8 +249,9 @@ void display() {
 	alu.display();
 	shiftLeftTwo.display();
 	aluAdd.display();
-	multiplexor.display();
 	programControl.display();
+	mux1.display();
+	mux2.display();
 	glEnable(GL_LIGHTING);
 
 	// Swap the buffers - flushing the current buffer

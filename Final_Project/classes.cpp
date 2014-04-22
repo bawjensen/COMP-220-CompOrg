@@ -15,7 +15,7 @@ Camera::Camera() {
 	this->angularScrollSpeed = 1 / (float)200; // Rotation speed of the camera
 	this->panActive = false; // Whether or not the camera is panning (via the mouse)
 
-	this->moveSpeed = 2.0;
+	this->moveSpeed = 5.0;
 }
 
 void Camera::setPos(float pX, float pY, float pZ) {
@@ -196,6 +196,8 @@ ControlUnit::ControlUnit() {
 }
 
 void ControlUnit::display() {
+	string label = "Control Unit";
+
 	float xTrans = 500;
 	float yTrans = 0;
 	float zTrans = -300;
@@ -208,9 +210,23 @@ void ControlUnit::display() {
 
 	glColor3f(1, 1, 1);
 	glTranslatef(xTrans, yTrans, zTrans);
+
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glTranslatef(0, 12, label.length() * -104.76 / 4);
+	glRotatef(-90, 0, 1, 0);
+	glRotatef(-90, 1, 0, 0);
+	glScalef(0.5, 0.5, 0.5);
+	for (int i = 0; i < label.length(); i++) {
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+	}
+	glPopMatrix();
+
+	glColor3f(1, 1, 1);
 	glScalef(xScale, yScale, zScale);
 	glRotatef(-90, 1, 0, 0);
 	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
+	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
 
 	glPopMatrix();
 }
@@ -223,6 +239,8 @@ RegAccess::RegAccess() {
 }
 
 void RegAccess::display() {
+	string label = "Registers";
+
 	float xTrans = -200;
 	float yTrans = 0;
 	float zTrans = -200;
@@ -235,6 +253,19 @@ void RegAccess::display() {
 
 	glColor3f(1, 1, 1);
 	glTranslatef(xTrans, yTrans, zTrans);
+
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glTranslatef(0, 12, label.length() * -104.76 / 4);
+	glRotatef(-90, 0, 1, 0);
+	glRotatef(-90, 1, 0, 0);
+	glScalef(0.5, 0.5, 0.5);
+	for (int i = 0; i < label.length(); i++) {
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+	}
+	glPopMatrix();
+
+	glColor3f(1, 1, 1);
 	glScalef(xScale, yScale, zScale);
 	glutSolidCube(1.0);
 
@@ -249,6 +280,8 @@ SignExtend::SignExtend() {
 }
 
 void SignExtend::display() {
+	string label = "Sign Extend";
+
 	float xTrans = -700;
 	float yTrans = 0;
 	float zTrans = 0;
@@ -261,9 +294,23 @@ void SignExtend::display() {
 
 	glColor3f(1, 1, 1);
 	glTranslatef(xTrans, yTrans, zTrans);
+
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glTranslatef(0, 12, label.length() * -104.76 / 4);
+	glRotatef(-90, 0, 1, 0);
+	glRotatef(-90, 1, 0, 0);
+	glScalef(0.5, 0.5, 0.5);
+	for (int i = 0; i < label.length(); i++) {
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+	}
+	glPopMatrix();
+
+	glColor3f(1, 1, 1);
 	glScalef(xScale, yScale, zScale);
 	glRotatef(-90, 1, 0, 0);
 	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
+	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
 
 	glPopMatrix();
 }
@@ -276,6 +323,8 @@ ALUControl::ALUControl() {
 }
 
 void ALUControl::display() {
+	string label = "ALU Control";
+
 	float xTrans = 250;
 	float yTrans = 0;
 	float zTrans = 50;
@@ -288,9 +337,23 @@ void ALUControl::display() {
 
 	glColor3f(1, 1, 1);
 	glTranslatef(xTrans, yTrans, zTrans);
+
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glTranslatef(0, 12, label.length() * -104.76 / 4);
+	glRotatef(-90, 0, 1, 0);
+	glRotatef(-90, 1, 0, 0);
+	glScalef(0.5, 0.5, 0.5);
+	for (int i = 0; i < label.length(); i++) {
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+	}
+	glPopMatrix();
+
+	glColor3f(1, 1, 1);
 	glScalef(xScale, yScale, zScale);
 	glRotatef(-90, 1, 0, 0);
 	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
+	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
 
 	glPopMatrix();
 }
@@ -303,6 +366,8 @@ ALU::ALU() {
 }
 
 void ALU::display() {
+	string label = "ALU";
+
 	float xTrans = 100;
 	float yTrans = 0;
 	float zTrans = 400;
@@ -315,6 +380,19 @@ void ALU::display() {
 
 	glColor3f(1, 1, 1);
 	glTranslatef(xTrans, yTrans, zTrans);
+
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glTranslatef(0, 12, label.length() * -104.76 / 4);
+	glRotatef(-90, 0, 1, 0);
+	glRotatef(-90, 1, 0, 0);
+	glScalef(0.5, 0.5, 0.5);
+	for (int i = 0; i < label.length(); i++) {
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+	}
+	glPopMatrix();
+
+	glColor3f(1, 1, 1);
 	glScalef(xScale, yScale, zScale);
 	glutSolidCube(1.0);
 
@@ -329,6 +407,8 @@ ShiftLeftTwo::ShiftLeftTwo() {
 }
 
 void ShiftLeftTwo::display() {
+	string label = "Shift-Left 2";
+
 	float xTrans = -600;
 	float yTrans = 0;
 	float zTrans = 275;
@@ -341,9 +421,23 @@ void ShiftLeftTwo::display() {
 
 	glColor3f(1, 1, 1);
 	glTranslatef(xTrans, yTrans, zTrans);
+
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glTranslatef(0, 12, label.length() * -104.76 / 4);
+	glRotatef(-90, 0, 1, 0);
+	glRotatef(-90, 1, 0, 0);
+	glScalef(0.5, 0.5, 0.5);
+	for (int i = 0; i < label.length(); i++) {
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+	}
+	glPopMatrix();
+
+	glColor3f(1, 1, 1);
 	glScalef(xScale, yScale, zScale);
 	glRotatef(-90, 1, 0, 0);
 	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
+	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
 
 	glPopMatrix();
 }
@@ -356,6 +450,8 @@ ALUAdd::ALUAdd() {
 }
 
 void ALUAdd::display() {
+	string label = "Add";
+
 	float xTrans = -650;
 	float yTrans = 0;
 	float zTrans = 600;
@@ -374,6 +470,19 @@ void ALUAdd::display() {
 
 	glColor3f(1, 1, 1);
 	glTranslatef(xTrans, yTrans, zTrans);
+
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glTranslatef(0, 12, label.length() * -104.76 / 4);
+	glRotatef(-90, 0, 1, 0);
+	glRotatef(-90, 1, 0, 0);
+	glScalef(0.5, 0.5, 0.5);
+	for (int i = 0; i < label.length(); i++) {
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+	}
+	glPopMatrix();
+
+	glColor3f(1, 1, 1);
 	glScalef(xScale, yScale, zScale);
 	glutSolidCube(1.0);
 
@@ -383,12 +492,87 @@ void ALUAdd::display() {
 // -------------------------------------------------------------------------------------------
 
 
-Multiplexor::Multiplexor() {
+Multiplexer1::Multiplexer1() {
 
 }
 
-void Multiplexor::display() {
+void Multiplexer1::display() {
+	string label = "Mux #1";
 
+	float xTrans = 200;
+	float yTrans = 0;
+	float zTrans = 150;
+
+	float xScale = 200;
+	float yScale = 10;
+	float zScale = 30;
+
+	glPushMatrix();
+
+	glColor3f(1, 1, 1);
+	glTranslatef(xTrans, yTrans, zTrans);
+
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glTranslatef(0, 12, label.length() * -104.76 / 4);
+	glRotatef(-90, 0, 1, 0);
+	glRotatef(-90, 1, 0, 0);
+	glScalef(0.5, 0.5, 0.5);
+	for (int i = 0; i < label.length(); i++) {
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+	}
+	glPopMatrix();
+
+	glColor3f(1, 1, 1);
+	glScalef(xScale, yScale, zScale);
+	glRotatef(-90, 1, 0, 0);
+	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
+	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
+
+	glPopMatrix();
+}
+
+// -------------------------------------------------------------------------------------------
+
+
+Multiplexer2::Multiplexer2() {
+
+}
+
+void Multiplexer2::display() {
+	string label = "Mux #2";
+
+	float xTrans = -200;
+	float yTrans = 0;
+	float zTrans = 800;
+
+	float xScale = 200;
+	float yScale = 10;
+	float zScale = 30;
+
+	glPushMatrix();
+
+	glTranslatef(xTrans, yTrans, zTrans);
+
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glTranslatef(0, 12, label.length() * -104.76 / 4);
+	glRotatef(-90, 0, 1, 0);
+	glRotatef(-90, 1, 0, 0);
+	glScalef(0.5, 0.5, 0.5);
+	for (int i = 0; i < label.length(); i++) {
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+	}
+	glPopMatrix();
+
+	glColor3f(1, 1, 1);
+	glScalef(xScale, yScale, zScale);
+	glRotatef(-90, 1, 0, 0);
+	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
+	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
+
+
+	glPopMatrix();
 }
 
 // -------------------------------------------------------------------------------------------
@@ -399,6 +583,7 @@ ProgramControl::ProgramControl() {
 }
 
 void ProgramControl::display() {
+	string label = "PC";
 
 	float xTrans = -100;
 	float yTrans = 0;
@@ -412,6 +597,19 @@ void ProgramControl::display() {
 
 	glColor3f(1, 1, 1);
 	glTranslatef(xTrans, yTrans, zTrans);
+
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glTranslatef(0, 12, label.length() * -104.76 / 4);
+	glRotatef(-90, 0, 1, 0);
+	glRotatef(-90, 1, 0, 0);
+	glScalef(0.5, 0.5, 0.5);
+	for (int i = 0; i < label.length(); i++) {
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+	}
+	glPopMatrix();
+
+	glColor3f(1, 1, 1);
 	glScalef(xScale, yScale, zScale);
 	glutSolidCube(1.0);
 	glPopMatrix();

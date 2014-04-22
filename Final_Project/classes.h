@@ -149,10 +149,18 @@ public:
 	void display();
 };
 
-class Multiplexor {
+class Multiplexer1 {
 private:
 public:
-	Multiplexor();
+	Multiplexer1();
+
+	void display();
+};
+
+class Multiplexer2 {
+private:
+public:
+	Multiplexer2();
 
 	void display();
 };
