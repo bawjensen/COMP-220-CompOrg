@@ -130,13 +130,37 @@ void Camera::handleMovement(int x, int y) {
 // -------------------------------------------------------------------------------------------
 
 Bit::Bit() {
+	this->isMoving = false;
+	this->position = Coord3f(0, 0, 0);
+	this->direction = Coord3f(0, 0, 0);
+	this->stage = 0;
+	this->hostWire = NULL;
+}
 
+Bit::Bit(Coord3f startPosition) {
+	this->isMoving = false;
+	this->position = startPosition;
+	this->direction = Coord3f(0, 0, 0);
+	this->stage = 0;
+	this->hostWire = NULL;
+}
+
+void Bit::update() {
+	if (this->isMoving)
+		this->position += this->direction;
+}
+
+void Bit::display() {
+	glPushMatrix();
+	glTranslatef(this->position.x, this->position.y, this->position.z);
+	glutSolidSphere(4.0, 20, 20);
+	glPopMatrix();
 }
 
 // -------------------------------------------------------------------------------------------
 
 Wire::Wire() {
-
+	this->hasBit = false;
 }
 
 Wire::Wire(Coord3f start, Coord3f end) {
@@ -145,13 +169,133 @@ Wire::Wire(Coord3f start, Coord3f end) {
 }
 
 void Wire::display() {
-	glBegin(GL_LINES);
+	glBegin(GL_LINE_STRIP);
 
 	for (vector<Coord3f>::iterator it = this->points.begin(); it != this->points.end(); ++it) {
 		glVertex3f(it->x, it->y, it->z);
 	}
 
 	glEnd();
+
+	if (this->hasBit) {
+		this->bit.update();
+		this->bit.display();
+	}
+}
+
+void Wire::attach(Bit newBit) {
+	this->bit = newBit;
+	this->bit.hostWire = this;
+	this->hasBit = true;
+}
+
+// -------------------------------------------------------------------------------------------
+
+ControlUnit::ControlUnit() {
+
+}
+
+void ControlUnit::display() {
+	glPushMatrix();
+
+	glColor3f(1, 1, 1);
+	glTranslatef(10, 0, 10);
+	glScalef(10, 1, 10);
+	glRotatef(-90, 1, 0, 0);
+	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
+
+	glPopMatrix();
+
+}
+
+// -------------------------------------------------------------------------------------------
+
+
+RegAccess::RegAccess() {
+
+}
+
+void RegAccess::display() {
+
+}
+
+// -------------------------------------------------------------------------------------------
+
+
+SignExtend::SignExtend() {
+
+}
+
+void SignExtend::display() {
+
+}
+
+// -------------------------------------------------------------------------------------------
+
+
+ALUControl::ALUControl() {
+
+}
+
+void ALUControl::display() {
+
+}
+
+// -------------------------------------------------------------------------------------------
+
+
+ALU::ALU() {
+
+}
+
+void ALU::display() {
+
+}
+
+// -------------------------------------------------------------------------------------------
+
+
+ShiftLeftTwo::ShiftLeftTwo() {
+
+}
+
+void ShiftLeftTwo::display() {
+
+}
+
+// -------------------------------------------------------------------------------------------
+
+
+ALUAdd::ALUAdd() {
+
+}
+
+void ALUAdd::display() {
+
+}
+
+// -------------------------------------------------------------------------------------------
+
+
+Multiplexor::Multiplexor() {
+
+}
+
+void Multiplexor::display() {
+
+}
+
+// -------------------------------------------------------------------------------------------
+
+
+ProgramControl::ProgramControl() {
+
+}
+
+void ProgramControl::display() {
+	glPushMatrix();
+
+	glPopMatrix();
 }
 
 // -------------------------------------------------------------------------------------------
@@ -171,17 +315,19 @@ void CPU::initialize() {
 	for (float i = bottom; i <= top; i += spacing) {
 		this->wires.push_back(Wire(Coord3f(i, 5, left), Coord3f(i, 5, right)));
 	}
+
+	this->wires[0].attach(Bit(this->wires[0].points[0]));
 }
 
 void CPU::display() {
-	glDisable(GL_LIGHTING);
+	// glDisable(GL_LIGHTING);
 	glColor3f(1.0, 0.0, 0.0);
 
 	for (vector<Wire>::iterator it = this->wires.begin(); it != this->wires.end(); ++it) {
 		it->display();
 	}
 
-	glEnable(GL_LIGHTING);
+	// glEnable(GL_LIGHTING);
 }
 
 // -------------------------------------------------------------------------------------------

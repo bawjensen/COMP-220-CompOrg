@@ -29,7 +29,7 @@ float verticalFieldOfView = 60.0f;
 float horizFieldOfView = ((float)initialWindowWidth / (float)initialWindowHeight) * verticalFieldOfView;
 
 // grid dimensions for the reference grid (used in debugging)
-int gridWidth = 1200;
+int gridWidth = 1000;
 int gridBoundary = gridWidth / 2;
 
 // radius of rotation for the camera
@@ -38,6 +38,15 @@ int rotationRadius = 1250;
 // Camera mCam;
 Camera cam;
 CPU cpu;
+ControlUnit controlUnit;
+RegAccess regAccess;
+SignExtend signExtend;
+ALUControl aluControl;
+ALU alu;
+ShiftLeftTwo shiftLeftTwo;
+ALUAdd aluAdd;
+Multiplexor multiplexor;
+ProgramControl programControl;
 
 // -------------------------------------------------------------------------------------------
 
@@ -230,9 +239,18 @@ void display() {
 	glDisable(GL_LIGHTING);
 	drawReferenceGrid();
 	drawAxes();
-	glEnable(GL_LIGHTING);
 
 	cpu.display();
+	controlUnit.display();
+	regAccess.display();
+	signExtend.display();
+	aluControl.display();
+	alu.display();
+	shiftLeftTwo.display();
+	aluAdd.display();
+	multiplexor.display();
+	programControl.display();
+	glEnable(GL_LIGHTING);
 
 	// Swap the buffers - flushing the current buffer
 	glutSwapBuffers();

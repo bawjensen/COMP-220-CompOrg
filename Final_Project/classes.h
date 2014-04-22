@@ -61,19 +61,106 @@ public:
 	void handleMovement(int, int);
 };
 
+class Wire;
+
 class Bit {
 private:
 public:
+	bool isMoving;
+	Wire* hostWire;
+	Coord3f position;
+	Coord3f direction;
+	int stage;
+
 	Bit();
+	Bit(Coord3f);
+
+	void update();
+	void display();
 };
 
 class Wire {
 private:
 public:
 	vector<Coord3f> points;
+	Bit bit;
+	bool hasBit;
 
 	Wire();
 	Wire(Coord3f, Coord3f);
+
+	void display();
+	void attach(Bit);
+};
+
+class ControlUnit {
+private:
+public:
+	ControlUnit();
+
+	void display();
+};
+
+class RegAccess {
+private:
+public:
+	RegAccess();
+
+	void display();
+};
+
+class SignExtend {
+private:
+public:
+	SignExtend();
+
+	void display();
+};
+
+class ALUControl {
+private:
+public:
+	ALUControl();
+
+	void display();
+};
+
+class ALU {
+private:
+public:
+	ALU();
+
+	void display();
+};
+
+class ShiftLeftTwo {
+private:
+public:
+	ShiftLeftTwo();
+
+	void display();
+};
+
+class ALUAdd {
+private:
+public:
+	ALUAdd();
+
+	void display();
+};
+
+class Multiplexor {
+private:
+public:
+	Multiplexor();
+
+	void display();
+};
+
+class ProgramControl {
+private:
+public:
+	ProgramControl();
 
 	void display();
 };

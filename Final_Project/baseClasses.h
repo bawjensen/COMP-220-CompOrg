@@ -34,6 +34,7 @@ public:
 	Coord3f(float, float, float);
 
 	Coord3f operator+(const Coord3f&) const;
+	Coord3f& operator+=(const Coord3f&);
 	Coord3f operator/(float) const;
 
 	friend ostream& operator<<(ostream&, const Coord3f&);
