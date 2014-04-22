@@ -215,7 +215,22 @@ RegAccess::RegAccess() {
 }
 
 void RegAccess::display() {
+	float xTrans = -200;
+	float yTrans = 0;
+	float zTrans = -200;
 
+	float xScale = 400;
+	float yScale = 10;
+	float zScale = 200;
+
+	glPushMatrix();
+
+	glColor3f(1, 1, 1);
+	glTranslatef(xTrans, yTrans, zTrans);
+	glScalef(xScale, yScale, zScale);
+	glutSolidCube(1.0);
+
+	glPopMatrix();
 }
 
 // -------------------------------------------------------------------------------------------
@@ -309,7 +324,22 @@ ALUAdd::ALUAdd() {
 }
 
 void ALUAdd::display() {
+	float xTrans = -650;
+	float yTrans = 0;
+	float zTrans = 600;
 
+	float xScale = 400;
+	float yScale = 10;
+	float zScale = 200;
+
+	glPushMatrix();
+
+	glColor3f(1, 1, 1);
+	glTranslatef(xTrans, yTrans, zTrans);
+	glScalef(xScale, yScale, zScale);
+	glutSolidCube(1.0);
+
+	glPopMatrix();
 }
 
 // -------------------------------------------------------------------------------------------
