@@ -226,7 +226,15 @@ SignExtend::SignExtend() {
 }
 
 void SignExtend::display() {
+	glPushMatrix();
 
+	glColor3f(1, 1, 1);
+	glTranslatef(-700, 0, 0);
+	glScalef(100, 10, 50);
+	glRotatef(-90, 1, 0, 0);
+	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
+
+	glPopMatrix();
 }
 
 // -------------------------------------------------------------------------------------------
@@ -240,8 +248,8 @@ void ALUControl::display() {
 	glPushMatrix();
 
 	glColor3f(1, 1, 1);
-	glTranslatef(500, 0, 100);
-	glScalef(200, 1, 100);
+	glTranslatef(250, 0, 50);
+	glScalef(200, 10, 100);
 	glRotatef(-90, 1, 0, 0);
 	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
 
@@ -256,7 +264,22 @@ ALU::ALU() {
 }
 
 void ALU::display() {
+	float xTrans = 100;
+	float yTrans = 0;
+	float zTrans = 400;
 
+	float xScale = 400;
+	float yScale = 10;
+	float zScale = 200;
+
+	glPushMatrix();
+
+	glColor3f(1, 1, 1);
+	glTranslatef(xTrans, yTrans, zTrans);
+	glScalef(xScale, yScale, zScale);
+	glutSolidCube(1.0);
+
+	glPopMatrix();
 }
 
 // -------------------------------------------------------------------------------------------
