@@ -35,10 +35,9 @@ int gridBoundary = gridWidth / 2;
 // radius of rotation for the camera
 int rotationRadius = 1250;
 
-bool gettingRandomDEMFileInput = false;
-
 // Camera mCam;
 Camera cam;
+CPU cpu;
 
 // -------------------------------------------------------------------------------------------
 
@@ -93,17 +92,8 @@ void init(int numArgs, char** argArray) {
 
 	cam.setDepthOfView(10000);
 
-	updateUserAttributes(false);
-	// cout << "\n\nTesting:" << endl;
-
-	// Vec3f vec(1, 0, 0);
-	// Vec3f axis(0, 0, -1);
-
-	// Quat4f quat(45, axis);
-
-	// cout << quat.rotateVector(vec) << endl;
-
-	// cout << "Testing done.\n\n" << endl;
+	cpu.numBits = 32;
+	cpu.initialize();
 }
 
 void resize(int w, int h) {
@@ -159,14 +149,14 @@ void drawAxes() {
 
 void drawReferenceGrid() {
 	// Draw axes
-	glColor3f(1.0, 1.0, 1.0);
-	glLineWidth(10);
-	glBegin(GL_LINES);
-		glVertex3f(-gridBoundary * 1.1, 0, 	0);
-		glVertex3f(gridBoundary * 1.1, 	0, 	0);
-		glVertex3f(0, 	0, 	-gridBoundary * 1.1);
-		glVertex3f(0, 	0, 	gridBoundary * 1.1);
-	glEnd();
+	// glColor3f(1.0, 1.0, 1.0);
+	// glLineWidth(10);
+	// glBegin(GL_LINES);
+	// 	glVertex3f(-gridBoundary * 1.1, 0, 	0);
+	// 	glVertex3f(gridBoundary * 1.1, 	0, 	0);
+	// 	glVertex3f(0, 	0, 	-gridBoundary * 1.1);
+	// 	glVertex3f(0, 	0, 	gridBoundary * 1.1);
+	// glEnd();
 
 	// Draw grid on "ground"
 	glColor3f(0.9, 0.9, 0.9);
@@ -174,12 +164,11 @@ void drawReferenceGrid() {
 	glBegin(GL_LINES);
 	int gridIterator = gridBoundary / 10;
 	for (int i = -gridBoundary; i <= gridBoundary; i += gridIterator) {
+		if (i == 0) continue;
 		glVertex3f(i, 0, -gridBoundary);
 		glVertex3f(i, 0, gridBoundary);
-	}
-	for (int j = -gridBoundary; j <= gridBoundary; j += gridIterator) {
-		glVertex3f(-gridBoundary, 0, j);
-		glVertex3f(gridBoundary, 0, j);
+		glVertex3f(-gridBoundary, 0, i);
+		glVertex3f(gridBoundary, 0, i);
 	}
 	glEnd();
 }
@@ -242,6 +231,8 @@ void display() {
 	drawReferenceGrid();
 	drawAxes();
 	glEnable(GL_LIGHTING);
+
+	cpu.display();
 
 	// Swap the buffers - flushing the current buffer
 	glutSwapBuffers();
@@ -354,7 +345,7 @@ int main(int argc, char** argv) {
 
 	// Create GLUT window
 	glutInitWindowSize(initialWindowWidth, initialWindowHeight); // Scale factor is scaling the map to fit screen 
-	glutInitWindowPosition(100, 100); 
+	glutInitWindowPosition(0, 0); 
 	glutCreateWindow("Lit Landscape");
 
 	// Custom init

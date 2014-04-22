@@ -17,8 +17,6 @@
 
 using namespace std;
 
-class DEMGenerator;
-
 class Camera {
 private:
 public:
@@ -61,6 +59,35 @@ public:
 	void rotate(float, float);
 	void handleClick(int, int, int, int);
 	void handleMovement(int, int);
+};
+
+class Bit {
+private:
+public:
+	Bit();
+};
+
+class Wire {
+private:
+public:
+	vector<Coord3f> points;
+
+	Wire();
+	Wire(Coord3f, Coord3f);
+
+	void display();
+};
+
+class CPU {
+private:
+public:
+	int numBits;
+	vector<Wire> wires;
+
+	CPU();
+
+	void initialize();
+	void display();
 };
 
 #endif

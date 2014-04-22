@@ -128,3 +128,60 @@ void Camera::handleMovement(int x, int y) {
 }
 
 // -------------------------------------------------------------------------------------------
+
+Bit::Bit() {
+
+}
+
+// -------------------------------------------------------------------------------------------
+
+Wire::Wire() {
+
+}
+
+Wire::Wire(Coord3f start, Coord3f end) {
+	this->points.push_back(start);
+	this->points.push_back(end);
+}
+
+void Wire::display() {
+	glBegin(GL_LINES);
+
+	for (vector<Coord3f>::iterator it = this->points.begin(); it != this->points.end(); ++it) {
+		glVertex3f(it->x, it->y, it->z);
+	}
+
+	glEnd();
+}
+
+// -------------------------------------------------------------------------------------------
+
+CPU::CPU() {
+
+}
+
+void CPU::initialize() {
+	int spacing = 10;
+
+	float top = (float)(this->numBits - 1) / 2 * spacing;
+	float bottom = -top;
+	float left = -100.0;
+	float right = 100.0;
+
+	for (float i = bottom; i <= top; i += spacing) {
+		this->wires.push_back(Wire(Coord3f(i, 5, left), Coord3f(i, 5, right)));
+	}
+}
+
+void CPU::display() {
+	glDisable(GL_LIGHTING);
+	glColor3f(1.0, 0.0, 0.0);
+
+	for (vector<Wire>::iterator it = this->wires.begin(); it != this->wires.end(); ++it) {
+		it->display();
+	}
+
+	glEnable(GL_LIGHTING);
+}
+
+// -------------------------------------------------------------------------------------------

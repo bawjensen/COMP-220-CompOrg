@@ -16,15 +16,6 @@ using namespace std;
 
 class Matrix44f; // Forward definition to allow use in Vec3f
 
-class Color3f {
-private:
-public:
-	float red, green, blue;
-
-	Color3f();
-	Color3f(float, float, float);
-};
-
 class Coord2i {
 private:
 public:
@@ -46,6 +37,15 @@ public:
 	Coord3f operator/(float) const;
 
 	friend ostream& operator<<(ostream&, const Coord3f&);
+};
+
+class Color3f {
+private:
+public:
+	float red, green, blue;
+
+	Color3f();
+	Color3f(float, float, float);
 };
 
 class Vec3f : public Coord3f {
