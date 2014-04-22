@@ -329,7 +329,7 @@ ShiftLeftTwo::ShiftLeftTwo() {
 }
 
 void ShiftLeftTwo::display() {
-	float xTrans = -600;
+	float xTrans = -550;
 	float yTrans = 0;
 	float zTrans = 275;
 
@@ -393,7 +393,6 @@ void Multiplexor::display() {
 
 // -------------------------------------------------------------------------------------------
 
-
 ProgramControl::ProgramControl() {
 
 }
@@ -407,6 +406,78 @@ void ProgramControl::display() {
 	float xScale = 200;
 	float yScale = 10;
 	float zScale = 100;
+
+	glPushMatrix();
+
+	glColor3f(1, 1, 1);
+	glTranslatef(xTrans, yTrans, zTrans);
+	glScalef(xScale, yScale, zScale);
+	glutSolidCube(1.0);
+	glPopMatrix();
+}
+
+// -------------------------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------
+
+
+AndGate::AndGate() {
+
+}
+
+void AndGate::display() {
+
+	float xTrans = -300;
+	float yTrans = 0;
+	float zTrans = 670;
+
+	float xScale = 100;
+	float yScale = 10;
+	float zScale = 50;
+
+	glPushMatrix();
+
+	glColor3f(1, 1, 1);
+	glTranslatef(xTrans, yTrans, zTrans);
+	glScalef(xScale, yScale, zScale);
+	glutSolidCube(1.0);
+
+	glPopMatrix();
+
+	xScale = 50;
+	yScale = 10;
+	zScale = 50;
+	yTrans = -5;
+	zTrans = 700;
+
+	glPushMatrix();
+	glTranslatef(xTrans, yTrans, zTrans);
+	glScalef(xScale, yScale, zScale);
+	glRotatef(-90, 1, 0, 0);
+	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
+	gluCylinder(gluNewQuadric(), 1.0, 1.0, 1.0, 20, 20);
+	glPopMatrix();
+
+}
+
+// -------------------------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------------------
+
+
+Add4::Add4() {
+
+}
+
+void Add4::display() {
+
+	float xTrans = -800;
+	float yTrans = 0;
+	float zTrans = 300;
+
+	float xScale = 250;
+	float yScale = 10;
+	float zScale = 150;
 
 	glPushMatrix();
 

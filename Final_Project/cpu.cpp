@@ -47,6 +47,8 @@ ShiftLeftTwo shiftLeftTwo;
 ALUAdd aluAdd;
 Multiplexor multiplexor;
 ProgramControl programControl;
+Add4 add4;
+AndGate andGate;
 
 // -------------------------------------------------------------------------------------------
 
@@ -250,6 +252,8 @@ void display() {
 	aluAdd.display();
 	multiplexor.display();
 	programControl.display();
+	add4.display();
+	andGate.display();
 	glEnable(GL_LIGHTING);
 
 	// Swap the buffers - flushing the current buffer

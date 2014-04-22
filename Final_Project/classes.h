@@ -165,6 +165,22 @@ public:
 	void display();
 };
 
+class AndGate {
+private:
+public:
+	AndGate();
+
+	void display();
+};
+
+class Add4 {
+private:
+public:
+	Add4();
+
+	void display();
+};
+
 class CPU {
 private:
 public:
