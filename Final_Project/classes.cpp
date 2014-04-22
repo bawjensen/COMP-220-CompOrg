@@ -196,13 +196,21 @@ ControlUnit::ControlUnit() {
 }
 
 void ControlUnit::display() {
+	float xTrans = 500;
+	float yTrans = 0;
+	float zTrans = -300;
+
+	float xScale = 200;
+	float yScale = 10;
+	float zScale = 100;
+
 	glPushMatrix();
 
 	glColor3f(1, 1, 1);
-	glTranslatef(10, 0, 10);
-	glScalef(10, 1, 10);
+	glTranslatef(xTrans, yTrans, zTrans);
+	glScalef(xScale, yScale, zScale);
 	glRotatef(-90, 1, 0, 0);
-	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
+	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
 
 	glPopMatrix();
 }
@@ -240,7 +248,7 @@ void SignExtend::display() {
 	glTranslatef(xTrans, yTrans, zTrans);
 	glScalef(xScale, yScale, zScale);
 	glRotatef(-90, 1, 0, 0);
-	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
+	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
 
 	glPopMatrix();
 }
@@ -257,9 +265,9 @@ void ALUControl::display() {
 	float yTrans = 0;
 	float zTrans = 50;
 
-	float xScale = 200;
+	float xScale = 100;
 	float yScale = 10;
-	float zScale = 100;
+	float zScale = 50;
 
 	glPushMatrix();
 
@@ -267,7 +275,7 @@ void ALUControl::display() {
 	glTranslatef(xTrans, yTrans, zTrans);
 	glScalef(xScale, yScale, zScale);
 	glRotatef(-90, 1, 0, 0);
-	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
+	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
 
 	glPopMatrix();
 }
@@ -320,7 +328,7 @@ void ShiftLeftTwo::display() {
 	glTranslatef(xTrans, yTrans, zTrans);
 	glScalef(xScale, yScale, zScale);
 	glRotatef(-90, 1, 0, 0);
-	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
+	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
 
 	glPopMatrix();
 }
@@ -371,6 +379,21 @@ ProgramControl::ProgramControl() {
 
 void ProgramControl::display() {
 
+	float xTrans = -100;
+	float yTrans = 0;
+	float zTrans = -850;
+
+	float xScale = 200;
+	float yScale = 10;
+	float zScale = 100;
+
+	glPushMatrix();
+
+	glColor3f(1, 1, 1);
+	glTranslatef(xTrans, yTrans, zTrans);
+	glScalef(xScale, yScale, zScale);
+	glutSolidCube(1.0);
+	glPopMatrix();
 }
 
 // -------------------------------------------------------------------------------------------
