@@ -29,7 +29,7 @@ float verticalFieldOfView = 60.0f;
 float horizFieldOfView = ((float)initialWindowWidth / (float)initialWindowHeight) * verticalFieldOfView;
 
 // grid dimensions for the reference grid (used in debugging)
-int gridWidth = 1000;
+int gridWidth = 2000;
 int gridBoundary = gridWidth / 2;
 
 // radius of rotation for the camera

@@ -3,7 +3,7 @@
 // -------------------------------------------------------------------------------------------
 
 Camera::Camera() {
-	this->pos = Vec3f(-100.0f, 25.0f, 0.0f); // Camera position
+	this->pos = Vec3f(-1000.0f, 1000.0f, 0.0f); // Camera position
 	this->origViewDir = Vec3f(1.0f, 0.0f, 0.0f); // View direction
 	this->viewDir = this->origViewDir; // View direction
 	this->strafeVec = this->viewDir.rotateY(-M_PI / 2);
@@ -15,7 +15,7 @@ Camera::Camera() {
 	this->angularScrollSpeed = 1 / (float)200; // Rotation speed of the camera
 	this->panActive = false; // Whether or not the camera is panning (via the mouse)
 
-	this->moveSpeed = 0.5;
+	this->moveSpeed = 2.0;
 }
 
 void Camera::setPos(float pX, float pY, float pZ) {
@@ -205,7 +205,6 @@ void ControlUnit::display() {
 	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
 
 	glPopMatrix();
-
 }
 
 // -------------------------------------------------------------------------------------------
@@ -238,7 +237,15 @@ ALUControl::ALUControl() {
 }
 
 void ALUControl::display() {
+	glPushMatrix();
 
+	glColor3f(1, 1, 1);
+	glTranslatef(500, 0, 100);
+	glScalef(200, 1, 100);
+	glRotatef(-90, 1, 0, 0);
+	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
+
+	glPopMatrix();
 }
 
 // -------------------------------------------------------------------------------------------
@@ -293,9 +300,7 @@ ProgramControl::ProgramControl() {
 }
 
 void ProgramControl::display() {
-	glPushMatrix();
 
-	glPopMatrix();
 }
 
 // -------------------------------------------------------------------------------------------
@@ -323,9 +328,9 @@ void CPU::display() {
 	// glDisable(GL_LIGHTING);
 	glColor3f(1.0, 0.0, 0.0);
 
-	for (vector<Wire>::iterator it = this->wires.begin(); it != this->wires.end(); ++it) {
-		it->display();
-	}
+	// for (vector<Wire>::iterator it = this->wires.begin(); it != this->wires.end(); ++it) {
+	// 	it->display();
+	// }
 
 	// glEnable(GL_LIGHTING);
 }
