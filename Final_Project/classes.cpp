@@ -245,11 +245,19 @@ ALUControl::ALUControl() {
 }
 
 void ALUControl::display() {
+	float xTrans = 250;
+	float yTrans = 0;
+	float zTrans = 50;
+
+	float xScale = 200;
+	float yScale = 10;
+	float zScale = 100;
+
 	glPushMatrix();
 
 	glColor3f(1, 1, 1);
-	glTranslatef(250, 0, 50);
-	glScalef(200, 10, 100);
+	glTranslatef(xTrans, yTrans, zTrans);
+	glScalef(xScale, yScale, zScale);
 	glRotatef(-90, 1, 0, 0);
 	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
 
@@ -324,6 +332,21 @@ ProgramControl::ProgramControl() {
 
 void ProgramControl::display() {
 
+	float xTrans = -100;
+	float yTrans = 0;
+	float zTrans = -850;
+
+	float xScale = 200;
+	float yScale = 10;
+	float zScale = 100;
+
+	glPushMatrix();
+
+	glColor3f(1, 1, 1);
+	glTranslatef(xTrans, yTrans, zTrans);
+	glScalef(xScale, yScale, zScale);
+	glutSolidCube(1.0);
+	glPopMatrix();
 }
 
 // -------------------------------------------------------------------------------------------
