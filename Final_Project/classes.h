@@ -87,7 +87,7 @@ public:
 	bool hasBit;
 
 	Wire();
-	Wire(Coord3f, Coord3f);
+	Wire(const Coord3f&, const Coord3f&);
 
 	void display();
 	void attach(Bit);
@@ -102,14 +102,9 @@ public:
 	bool isAND;
 
 	Coord3f position;
-
 	Coord3f scale;
-	// float xScale;
-	// float yScale;
-	// float zScale;
 
 	Component() { isAND = false; };
-	// Component(float v1, float v2, float v3, float v4, float v5, float v6) : xTrans(v1), yTrans(v1), zTrans(v1), xScale(v1), yScale(v1), zScale(v1) {};
 
 	void display();
 };

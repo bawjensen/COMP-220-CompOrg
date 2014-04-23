@@ -163,13 +163,15 @@ Wire::Wire() {
 	this->hasBit = false;
 }
 
-Wire::Wire(Coord3f start, Coord3f end) {
+Wire::Wire(const Coord3f& start, const Coord3f& end) {
 	this->points.push_back(start);
 	this->points.push_back(end);
+	this->hasBit = false;
 }
 
 void Wire::display() {
 	glBegin(GL_LINE_STRIP);
+	glColor3f(0, 1, 0);
 
 	for (vector<Coord3f>::iterator it = this->points.begin(); it != this->points.end(); ++it) {
 		glVertex3f(it->x, it->y, it->z);

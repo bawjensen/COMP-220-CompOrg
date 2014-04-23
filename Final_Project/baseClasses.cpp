@@ -19,10 +19,23 @@ Coord3f::Coord3f() {
 	this->z = 0.0f;
 }
 
+Coord3f::Coord3f(const Coord3f& other) {
+	this->x = other.x;
+	this->y = other.y;
+	this->z = other.z;
+}
+
 Coord3f::Coord3f(float nX, float nY, float nZ) {
 	this->x = nX;
 	this->y = nY;
 	this->z = nZ;
+}
+
+Coord3f& Coord3f::operator=(const Coord3f& other) {
+	this->x = other.x;
+	this->y = other.y;
+	this->z = other.z;
+	return (*this);
 }
 
 Coord3f Coord3f::operator+(const Coord3f& other) const {

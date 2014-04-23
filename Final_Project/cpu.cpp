@@ -48,6 +48,9 @@ Add4 add4;
 AndGate andGate;
 Input input;
 
+int animationStage = 0;
+vector< vector<Wire> > wireStages;
+
 // -------------------------------------------------------------------------------------------
 
 void quit() {
@@ -217,6 +220,20 @@ void init(int numArgs, char** argArray) {
 	input.scale.x = 250;
 	input.scale.y = 10;
 	input.scale.z = 150;
+
+	vector<Wire> stage0;
+	stage0.push_back(Wire(input.position, controlUnit.position));
+	stage0.push_back(Wire(input.position, regAccess.position));
+	stage0.push_back(Wire(input.position, signExtend.position));
+	// stage0.push_back(Wire(input.position, controlUnit.position));
+
+	vector<Wire> stage1;
+	stage1.push_back(Wire(controlUnit.position, aluControl.position));
+	stage1.push_back(Wire(regAccess.position, mux1.position));
+	stage1.push_back(Wire(signExtend.position, shiftLeftTwo.position));
+
+	wireStages.push_back(stage0);
+	wireStages.push_back(stage1);
 }
 
 void resize(int w, int h) {
@@ -357,6 +374,13 @@ void display() {
 	add4.display();
 	andGate.display();
 	input.display();
+
+	for (vector< vector<Wire> >::iterator superIt = wireStages.begin(); superIt != wireStages.end(); ++superIt) {
+		for (vector<Wire>::iterator it = superIt->begin(); it != superIt->end(); ++it) {
+			it->display();
+		}
+	}
+
 	glEnable(GL_LIGHTING);
 
 	// Swap the buffers - flushing the current buffer
