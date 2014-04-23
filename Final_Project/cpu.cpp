@@ -225,7 +225,6 @@ void init(int numArgs, char** argArray) {
 	stage0.push_back(Wire(input.position, controlUnit.position));
 	stage0.push_back(Wire(input.position, regAccess.position));
 	stage0.push_back(Wire(input.position, signExtend.position));
-	// stage0.push_back(Wire(input.position, controlUnit.position));
 
 	vector<Wire> stage1;
 	stage1.push_back(Wire(controlUnit.position, aluControl.position));
