@@ -101,16 +101,15 @@ public:
 	bool isOval;
 	bool isAND;
 
-	float xTrans;
-	float yTrans;
-	float zTrans;
+	Coord3f position;
 
-	float xScale;
-	float yScale;
-	float zScale;
+	Coord3f scale;
+	// float xScale;
+	// float yScale;
+	// float zScale;
 
 	Component() { isAND = false; };
-	Component(float v1, float v2, float v3, float v4, float v5, float v6) : xTrans(v1), yTrans(v1), zTrans(v1), xScale(v1), yScale(v1), zScale(v1) {};
+	// Component(float v1, float v2, float v3, float v4, float v5, float v6) : xTrans(v1), yTrans(v1), zTrans(v1), xScale(v1), yScale(v1), zScale(v1) {};
 
 	void display();
 };

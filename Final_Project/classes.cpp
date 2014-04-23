@@ -194,7 +194,7 @@ void Wire::attach(Bit newBit) {
 void Component::display() {
 	glPushMatrix();
 
-	glTranslatef(xTrans, yTrans, zTrans);
+	glTranslatef(position.x, position.y, position.z);
 
 	glPushMatrix();
 	glColor3f(1, 0, 0);
@@ -208,7 +208,7 @@ void Component::display() {
 	glPopMatrix();
 
 	glColor3f(1, 1, 1);
-	glScalef(xScale, yScale, zScale);
+	glScalef(scale.x, scale.y, scale.z);
 
 	if (isAND) {
 		glutSolidCube(1.0);
@@ -218,6 +218,7 @@ void Component::display() {
 		float xScale = 50;
 		float yScale = 10;
 		float zScale = 50;
+		float xTrans = position.x;
 		float yTrans = -5;
 		float zTrans = 700;
 
@@ -244,33 +245,12 @@ void Component::display() {
 // -------------------------------------------------------------------------------------------
 
 CPU::CPU() {
-
 }
 
 void CPU::initialize() {
-	int spacing = 10;
-
-	float top = (float)(this->numBits - 1) / 2 * spacing;
-	float bottom = -top;
-	float left = -100.0;
-	float right = 100.0;
-
-	for (float i = bottom; i <= top; i += spacing) {
-		this->wires.push_back(Wire(Coord3f(i, 5, left), Coord3f(i, 5, right)));
-	}
-
-	this->wires[0].attach(Bit(this->wires[0].points[0]));
 }
 
 void CPU::display() {
-	// glDisable(GL_LIGHTING);
-	glColor3f(1.0, 0.0, 0.0);
-
-	// for (vector<Wire>::iterator it = this->wires.begin(); it != this->wires.end(); ++it) {
-	// 	it->display();
-	// }
-
-	// glEnable(GL_LIGHTING);
 }
 
 // -------------------------------------------------------------------------------------------
