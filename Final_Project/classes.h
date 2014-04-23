@@ -93,85 +93,53 @@ public:
 	void attach(Bit);
 };
 
-class ControlUnit {
+class Component {
 private:
 public:
-	ControlUnit();
+	string label;
+
+	bool isOval;
+	bool isAND;
+
+	float xTrans;
+	float yTrans;
+	float zTrans;
+
+	float xScale;
+	float yScale;
+	float zScale;
+
+	Component() { isAND = false; };
+	Component(float v1, float v2, float v3, float v4, float v5, float v6) : xTrans(v1), yTrans(v1), zTrans(v1), xScale(v1), yScale(v1), zScale(v1) {};
 
 	void display();
 };
 
-class RegAccess {
-private:
-public:
-	RegAccess();
+class ControlUnit : public Component {};
 
-	void display();
-};
+class RegAccess : public Component {};
 
-class SignExtend {
-private:
-public:
-	SignExtend();
+class SignExtend : public Component {};
 
-	void display();
-};
+class ALUControl : public Component {};
 
-class ALUControl {
-private:
-public:
-	ALUControl();
+class ALU : public Component {};
 
-	void display();
-};
+class ShiftLeftTwo : public Component {};
 
-class ALU {
-private:
-public:
-	ALU();
+class ALUAdd : public Component {};
 
-	void display();
-};
+class Multiplexer1 : public Component {};
 
-class ShiftLeftTwo {
-private:
-public:
-	ShiftLeftTwo();
+class Multiplexer2 : public Component {};
 
-	void display();
-};
+class ProgramControl : public Component {};
 
-class ALUAdd {
-private:
-public:
-	ALUAdd();
+class AndGate : public Component {};
 
-	void display();
-};
+class Add4 : public Component {};
 
-class Multiplexer1 {
-private:
-public:
-	Multiplexer1();
-
-	void display();
-};
-
-class Multiplexer2 {
-private:
-public:
-	Multiplexer2();
-
-	void display();
-};
-
-class ProgramControl {
-private:
-public:
-	ProgramControl();
-
-	void display();
-};
+class Input : public Component {};
 
 class CPU {
 private:

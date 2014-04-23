@@ -32,12 +32,8 @@ float horizFieldOfView = ((float)initialWindowWidth / (float)initialWindowHeight
 int gridWidth = 2000;
 int gridBoundary = gridWidth / 2;
 
-// radius of rotation for the camera
-int rotationRadius = 1250;
-
-// Camera mCam;
 Camera cam;
-CPU cpu;
+
 ControlUnit controlUnit;
 RegAccess regAccess;
 SignExtend signExtend;
@@ -48,6 +44,9 @@ ALUAdd aluAdd;
 ProgramControl programControl;
 Multiplexer1 mux1;
 Multiplexer2 mux2;
+Add4 add4;
+AndGate andGate;
+Input input;
 
 // -------------------------------------------------------------------------------------------
 
@@ -102,8 +101,122 @@ void init(int numArgs, char** argArray) {
 
 	cam.setDepthOfView(10000);
 
-	cpu.numBits = 32;
-	cpu.initialize();
+	controlUnit.label = "Control Unit";
+	controlUnit.isOval = true;
+	controlUnit.xTrans = 500;
+	controlUnit.yTrans = 0;
+	controlUnit.zTrans = -300;
+	controlUnit.xScale = 200;
+	controlUnit.yScale = 10;
+	controlUnit.zScale = 100;
+
+	regAccess.label = "Registers";
+	regAccess.isOval = false;
+	regAccess.xTrans = -200;
+	regAccess.yTrans = 0;
+	regAccess.zTrans = -200;
+	regAccess.xScale = 400;
+	regAccess.yScale = 10;
+	regAccess.zScale = 200;
+
+	signExtend.label = "Sign Extend";
+	signExtend.isOval = true;
+	signExtend.xTrans = -700;
+	signExtend.yTrans = 0;
+	signExtend.zTrans = 0;
+	signExtend.xScale = 100;
+	signExtend.yScale = 10;
+	signExtend.zScale = 50;
+
+	aluControl.label = "ALU Control";
+	aluControl.isOval = true;
+	aluControl.xTrans = 250;
+	aluControl.yTrans = 0;
+	aluControl.zTrans = 50;
+	aluControl.xScale = 100;
+	aluControl.yScale = 10;
+	aluControl.zScale = 50;
+
+	alu.label = "ALU";
+	alu.isOval = false;
+	alu.xTrans = -100;
+	alu.yTrans = 0;
+	alu.zTrans = 400;
+	alu.xScale = 400;
+	alu.yScale = 10;
+	alu.zScale = 200;
+
+	shiftLeftTwo.label = "Shift-Left 2";
+	shiftLeftTwo.isOval = true;
+	shiftLeftTwo.xTrans = -550;
+	shiftLeftTwo.yTrans = 0;
+	shiftLeftTwo.zTrans = 275;
+	shiftLeftTwo.xScale = 100;
+	shiftLeftTwo.yScale = 10;
+	shiftLeftTwo.zScale = 50;
+
+	aluAdd.label = "Add";
+	aluAdd.isOval = false;
+	aluAdd.xTrans = -550;
+	aluAdd.yTrans = 0;
+	aluAdd.zTrans = 600;
+	aluAdd.xScale = 200;
+	aluAdd.yScale = 10;
+	aluAdd.zScale = 100;
+
+	mux1.label = "Mux #1";
+	mux1.isOval = true;
+	mux1.xTrans = -300;
+	mux1.yTrans = 0;
+	mux1.zTrans = 150;
+	mux1.xScale = 150;
+	mux1.yScale = 10;
+	mux1.zScale = 30;
+
+	mux2.label = "Mux #2";
+	mux2.isOval = true;
+	mux2.xTrans = -600;
+	mux2.yTrans = 0;
+	mux2.zTrans = 850;
+	mux2.xScale = 150;
+	mux2.yScale = 10;
+	mux2.zScale = 30;
+
+	programControl.label = "PC";
+	programControl.isOval = false;
+	programControl.xTrans = -400;
+	programControl.yTrans = 0;
+	programControl.zTrans = -850;
+	programControl.xScale = 200;
+	programControl.yScale = 10;
+	programControl.zScale = 100;
+
+	andGate.label = "AND";
+	andGate.isAND = true; // Note: Not oval, it's an AND gate
+	andGate.xTrans = 200;
+	andGate.yTrans = 0;
+	andGate.zTrans = 670;
+	andGate.xScale = 100;
+	andGate.yScale = 10;
+	andGate.zScale = 50;
+
+	add4.label = "Increment";
+	add4.isOval = false;
+	add4.xTrans = -800;
+	add4.yTrans = 0;
+	add4.zTrans = 300;
+	add4.xScale = 250;
+	add4.yScale = 10;
+	add4.zScale = 150;
+
+	input.label = "Input";
+	input.isOval = false;
+	input.xTrans = -100;
+	input.yTrans = 0;
+	input.zTrans = -800;
+	input.xScale = 250;
+	input.yScale = 10;
+	input.zScale = 150;
 }
 
 void resize(int w, int h) {
@@ -158,16 +271,6 @@ void drawAxes() {
 }
 
 void drawReferenceGrid() {
-	// Draw axes
-	// glColor3f(1.0, 1.0, 1.0);
-	// glLineWidth(10);
-	// glBegin(GL_LINES);
-	// 	glVertex3f(-gridBoundary * 1.1, 0, 	0);
-	// 	glVertex3f(gridBoundary * 1.1, 	0, 	0);
-	// 	glVertex3f(0, 	0, 	-gridBoundary * 1.1);
-	// 	glVertex3f(0, 	0, 	gridBoundary * 1.1);
-	// glEnd();
-
 	// Draw grid on "ground"
 	glColor3f(0.9, 0.9, 0.9);
 	glLineWidth(1);
@@ -238,10 +341,9 @@ void display() {
 
 
 	glDisable(GL_LIGHTING);
-	drawReferenceGrid();
-	drawAxes();
+	// drawReferenceGrid();
+	// drawAxes();
 
-	cpu.display();
 	controlUnit.display();
 	regAccess.display();
 	signExtend.display();
@@ -252,6 +354,9 @@ void display() {
 	programControl.display();
 	mux1.display();
 	mux2.display();
+	add4.display();
+	andGate.display();
+	input.display();
 	glEnable(GL_LIGHTING);
 
 	// Swap the buffers - flushing the current buffer
@@ -259,7 +364,13 @@ void display() {
 }
 
 void idle() {
-	display();
+	clock_t endWait;
+
+	endWait = clock() + CLOCKS_PER_SEC / 60;
+	/* please wait...*/
+	while (clock() < endWait);
+
+	glutPostRedisplay();
 }
 
 // -------------------------------------------------------------------------------------------
@@ -366,7 +477,7 @@ int main(int argc, char** argv) {
 	// Create GLUT window
 	glutInitWindowSize(initialWindowWidth, initialWindowHeight); // Scale factor is scaling the map to fit screen 
 	glutInitWindowPosition(0, 0); 
-	glutCreateWindow("Lit Landscape");
+	glutCreateWindow("CPU");
 
 	// Custom init
 	init(argc, argv);

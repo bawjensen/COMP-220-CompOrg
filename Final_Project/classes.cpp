@@ -191,32 +191,17 @@ void Wire::attach(Bit newBit) {
 
 // -------------------------------------------------------------------------------------------
 
-ControlUnit::ControlUnit() {
-
-}
-
-void ControlUnit::display() {
-	string label = "Control Unit";
-
-	float xTrans = 500;
-	float yTrans = 0;
-	float zTrans = -300;
-
-	float xScale = 200;
-	float yScale = 10;
-	float zScale = 100;
-
+void Component::display() {
 	glPushMatrix();
 
-	glColor3f(1, 1, 1);
 	glTranslatef(xTrans, yTrans, zTrans);
 
 	glPushMatrix();
 	glColor3f(1, 0, 0);
-	glTranslatef(0, 12, label.length() * -104.76 / 4);
+	glTranslatef(0, 12, label.length() * -104.76 / 2 * .25);
 	glRotatef(-90, 0, 1, 0);
 	glRotatef(-90, 1, 0, 0);
-	glScalef(0.5, 0.5, 0.5);
+	glScalef(0.25, 0.25, 0.25);
 	for (int i = 0; i < label.length(); i++) {
 		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
 	}
@@ -224,394 +209,35 @@ void ControlUnit::display() {
 
 	glColor3f(1, 1, 1);
 	glScalef(xScale, yScale, zScale);
-	glRotatef(-90, 1, 0, 0);
-	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
-	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
 
-	glPopMatrix();
-}
+	if (isAND) {
+		glutSolidCube(1.0);
 
-// -------------------------------------------------------------------------------------------
+		glPopMatrix();
 
+		float xScale = 50;
+		float yScale = 10;
+		float zScale = 50;
+		float yTrans = -5;
+		float zTrans = 700;
 
-RegAccess::RegAccess() {
-
-}
-
-void RegAccess::display() {
-	string label = "Registers";
-
-	float xTrans = -200;
-	float yTrans = 0;
-	float zTrans = -200;
-
-	float xScale = 400;
-	float yScale = 10;
-	float zScale = 200;
-
-	glPushMatrix();
-
-	glColor3f(1, 1, 1);
-	glTranslatef(xTrans, yTrans, zTrans);
-
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glTranslatef(0, 12, label.length() * -104.76 / 4);
-	glRotatef(-90, 0, 1, 0);
-	glRotatef(-90, 1, 0, 0);
-	glScalef(0.5, 0.5, 0.5);
-	for (int i = 0; i < label.length(); i++) {
-		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+		glPushMatrix();
+		glTranslatef(xTrans, yTrans, zTrans);
+		glScalef(xScale, yScale, zScale);
+		glRotatef(-90, 1, 0, 0);
+		gluDisk(gluNewQuadric(), 0, 1, 100, 1);
+		gluCylinder(gluNewQuadric(), 1.0, 1.0, 1.0, 20, 20);
+		glPopMatrix();
 	}
-	glPopMatrix();
-
-	glColor3f(1, 1, 1);
-	glScalef(xScale, yScale, zScale);
-	glutSolidCube(1.0);
-
-	glPopMatrix();
-}
-
-// -------------------------------------------------------------------------------------------
-
-
-SignExtend::SignExtend() {
-
-}
-
-void SignExtend::display() {
-	string label = "Sign Extend";
-
-	float xTrans = -700;
-	float yTrans = 0;
-	float zTrans = 0;
-
-	float xScale = 100;
-	float yScale = 10;
-	float zScale = 50;
-
-	glPushMatrix();
-
-	glColor3f(1, 1, 1);
-	glTranslatef(xTrans, yTrans, zTrans);
-
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glTranslatef(0, 12, label.length() * -104.76 / 4);
-	glRotatef(-90, 0, 1, 0);
-	glRotatef(-90, 1, 0, 0);
-	glScalef(0.5, 0.5, 0.5);
-	for (int i = 0; i < label.length(); i++) {
-		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+	else if (isOval) {
+		glRotatef(-90, 1, 0, 0);
+		gluDisk(gluNewQuadric(), 0, 1, 100, 1);
+		gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
 	}
-	glPopMatrix();
-
-	glColor3f(1, 1, 1);
-	glScalef(xScale, yScale, zScale);
-	glRotatef(-90, 1, 0, 0);
-	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
-	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
-
-	glPopMatrix();
-}
-
-// -------------------------------------------------------------------------------------------
-
-
-ALUControl::ALUControl() {
-
-}
-
-void ALUControl::display() {
-	string label = "ALU Control";
-
-	float xTrans = 250;
-	float yTrans = 0;
-	float zTrans = 50;
-
-	float xScale = 100;
-	float yScale = 10;
-	float zScale = 50;
-
-	glPushMatrix();
-
-	glColor3f(1, 1, 1);
-	glTranslatef(xTrans, yTrans, zTrans);
-
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glTranslatef(0, 12, label.length() * -104.76 / 4);
-	glRotatef(-90, 0, 1, 0);
-	glRotatef(-90, 1, 0, 0);
-	glScalef(0.5, 0.5, 0.5);
-	for (int i = 0; i < label.length(); i++) {
-		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
+	else {
+		glutSolidCube(1.0);
 	}
-	glPopMatrix();
 
-	glColor3f(1, 1, 1);
-	glScalef(xScale, yScale, zScale);
-	glRotatef(-90, 1, 0, 0);
-	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
-	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
-
-	glPopMatrix();
-}
-
-// -------------------------------------------------------------------------------------------
-
-
-ALU::ALU() {
-
-}
-
-void ALU::display() {
-	string label = "ALU";
-
-	float xTrans = 100;
-	float yTrans = 0;
-	float zTrans = 400;
-
-	float xScale = 400;
-	float yScale = 10;
-	float zScale = 200;
-
-	glPushMatrix();
-
-	glColor3f(1, 1, 1);
-	glTranslatef(xTrans, yTrans, zTrans);
-
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glTranslatef(0, 12, label.length() * -104.76 / 4);
-	glRotatef(-90, 0, 1, 0);
-	glRotatef(-90, 1, 0, 0);
-	glScalef(0.5, 0.5, 0.5);
-	for (int i = 0; i < label.length(); i++) {
-		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
-	}
-	glPopMatrix();
-
-	glColor3f(1, 1, 1);
-	glScalef(xScale, yScale, zScale);
-	glutSolidCube(1.0);
-
-	glPopMatrix();
-}
-
-// -------------------------------------------------------------------------------------------
-
-
-ShiftLeftTwo::ShiftLeftTwo() {
-
-}
-
-void ShiftLeftTwo::display() {
-	string label = "Shift-Left 2";
-
-	float xTrans = -600;
-	float yTrans = 0;
-	float zTrans = 275;
-
-	float xScale = 100;
-	float yScale = 10;
-	float zScale = 50;
-
-	glPushMatrix();
-
-	glColor3f(1, 1, 1);
-	glTranslatef(xTrans, yTrans, zTrans);
-
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glTranslatef(0, 12, label.length() * -104.76 / 4);
-	glRotatef(-90, 0, 1, 0);
-	glRotatef(-90, 1, 0, 0);
-	glScalef(0.5, 0.5, 0.5);
-	for (int i = 0; i < label.length(); i++) {
-		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
-	}
-	glPopMatrix();
-
-	glColor3f(1, 1, 1);
-	glScalef(xScale, yScale, zScale);
-	glRotatef(-90, 1, 0, 0);
-	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
-	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
-
-	glPopMatrix();
-}
-
-// -------------------------------------------------------------------------------------------
-
-
-ALUAdd::ALUAdd() {
-
-}
-
-void ALUAdd::display() {
-	string label = "Add";
-
-	float xTrans = -650;
-	float yTrans = 0;
-	float zTrans = 600;
-
-	float xScale = 400;
-	float yScale = 10;
-	float zScale = 200;
-
-	glPushMatrix();
-
-	// float zTrans = 500;
-
-	// float xScale = 400;
-	// float yScale = 10;
-	// float zScale = 300;
-
-	glColor3f(1, 1, 1);
-	glTranslatef(xTrans, yTrans, zTrans);
-
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glTranslatef(0, 12, label.length() * -104.76 / 4);
-	glRotatef(-90, 0, 1, 0);
-	glRotatef(-90, 1, 0, 0);
-	glScalef(0.5, 0.5, 0.5);
-	for (int i = 0; i < label.length(); i++) {
-		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
-	}
-	glPopMatrix();
-
-	glColor3f(1, 1, 1);
-	glScalef(xScale, yScale, zScale);
-	glutSolidCube(1.0);
-
-	glPopMatrix();
-}
-
-// -------------------------------------------------------------------------------------------
-
-
-Multiplexer1::Multiplexer1() {
-
-}
-
-void Multiplexer1::display() {
-	string label = "Mux #1";
-
-	float xTrans = 200;
-	float yTrans = 0;
-	float zTrans = 150;
-
-	float xScale = 200;
-	float yScale = 10;
-	float zScale = 30;
-
-	glPushMatrix();
-
-	glColor3f(1, 1, 1);
-	glTranslatef(xTrans, yTrans, zTrans);
-
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glTranslatef(0, 12, label.length() * -104.76 / 4);
-	glRotatef(-90, 0, 1, 0);
-	glRotatef(-90, 1, 0, 0);
-	glScalef(0.5, 0.5, 0.5);
-	for (int i = 0; i < label.length(); i++) {
-		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
-	}
-	glPopMatrix();
-
-	glColor3f(1, 1, 1);
-	glScalef(xScale, yScale, zScale);
-	glRotatef(-90, 1, 0, 0);
-	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
-	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
-
-	glPopMatrix();
-}
-
-// -------------------------------------------------------------------------------------------
-
-
-Multiplexer2::Multiplexer2() {
-
-}
-
-void Multiplexer2::display() {
-	string label = "Mux #2";
-
-	float xTrans = -200;
-	float yTrans = 0;
-	float zTrans = 800;
-
-	float xScale = 200;
-	float yScale = 10;
-	float zScale = 30;
-
-	glPushMatrix();
-
-	glTranslatef(xTrans, yTrans, zTrans);
-
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glTranslatef(0, 12, label.length() * -104.76 / 4);
-	glRotatef(-90, 0, 1, 0);
-	glRotatef(-90, 1, 0, 0);
-	glScalef(0.5, 0.5, 0.5);
-	for (int i = 0; i < label.length(); i++) {
-		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
-	}
-	glPopMatrix();
-
-	glColor3f(1, 1, 1);
-	glScalef(xScale, yScale, zScale);
-	glRotatef(-90, 1, 0, 0);
-	gluDisk(gluNewQuadric(), 0, 1, 100, 1);
-	gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
-
-
-	glPopMatrix();
-}
-
-// -------------------------------------------------------------------------------------------
-
-
-ProgramControl::ProgramControl() {
-
-}
-
-void ProgramControl::display() {
-	string label = "PC";
-
-	float xTrans = -100;
-	float yTrans = 0;
-	float zTrans = -850;
-
-	float xScale = 200;
-	float yScale = 10;
-	float zScale = 100;
-
-	glPushMatrix();
-
-	glColor3f(1, 1, 1);
-	glTranslatef(xTrans, yTrans, zTrans);
-
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glTranslatef(0, 12, label.length() * -104.76 / 4);
-	glRotatef(-90, 0, 1, 0);
-	glRotatef(-90, 1, 0, 0);
-	glScalef(0.5, 0.5, 0.5);
-	for (int i = 0; i < label.length(); i++) {
-		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, label[i]);
-	}
-	glPopMatrix();
-
-	glColor3f(1, 1, 1);
-	glScalef(xScale, yScale, zScale);
-	glutSolidCube(1.0);
 	glPopMatrix();
 }
 
