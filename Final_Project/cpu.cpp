@@ -205,7 +205,7 @@ void init(int numArgs, char** argArray) {
 
 	add4.label = "Increment";
 	add4.isOval = false;
-	add4.position.x = -800;
+	add4.position.x = -900;
 	add4.position.y = 0;
 	add4.position.z = 300;
 	add4.scale.x = 250;
@@ -231,8 +231,14 @@ void init(int numArgs, char** argArray) {
 	stage1.push_back(Wire(regAccess.position, mux1.position));
 	stage1.push_back(Wire(signExtend.position, shiftLeftTwo.position));
 
+	vector<Wire> stage2;
+	stage2.push_back(Wire(regAccess.position, alu.position));
+	stage2.push_back(Wire(mux1.position, alu.position));
+	stage2.push_back(Wire(aluControl.position, alu.position));
+
 	wireStages.push_back(stage0);
 	wireStages.push_back(stage1);
+	wireStages.push_back(stage2);
 }
 
 void resize(int w, int h) {
