@@ -58,6 +58,8 @@ float animationSpeed = 0.00025;
 int timeStage0[2] = { 0, 1000 };
 int timeStage1[2] = { 1000, 2000 };
 int timeStage2[2] = { 2000, 3000 };
+int timeStage3[2] = { 3000, 4000 };
+
 
 // -------------------------------------------------------------------------------------------
 
@@ -144,9 +146,9 @@ void init(int numArgs, char** argArray) {
 
 	aluControl.label = "ALU Control";
 	aluControl.isOval = true;
-	aluControl.position.x = 350;
+	aluControl.position.x = 250;
 	aluControl.position.y = 0;
-	aluControl.position.z = 250;
+	aluControl.position.z = 50;
 	aluControl.scale.x = 100;
 	aluControl.scale.y = 10;
 	aluControl.scale.z = 50;
@@ -249,28 +251,48 @@ void init(int numArgs, char** argArray) {
 	stage0.push_back(Wire(input.output3, signExtend.input0, timeStage0[0], timeStage0[1]));
 
 	vector<Wire> stage1;
-	stage1.push_back(Wire(controlUnit.output0, aluControl.input0, timeStage1[0], timeStage1[1]));
-	stage1.push_back(Wire(regAccess.output0, alu.input0, timeStage1[0], timeStage1[1]));
+	stage1.push_back(Wire(controlUnit.output1, aluControl.input0, timeStage1[0], timeStage1[1]));
+	stage1.push_back(Wire(controlUnit.output2, mux1.input2, timeStage1[0], timeStage1[1]));
 	stage1.push_back(Wire(regAccess.output1, mux1.input0, timeStage1[0], timeStage1[1]));
-	stage1.push_back(Wire(signExtend.output0, shiftLeftTwo.input0, timeStage1[0], timeStage1[1]));
+	//stage1.push_back(Wire(signExtend.output1, mux1.input1, timeStage1[0], timeStage1[1]));
 
 	vector<Wire> stage2;
+	stage2.push_back(Wire(regAccess.output0, alu.input0, timeStage1[0], timeStage2[1]));
 	stage2.push_back(Wire(mux1.output0, alu.input1, timeStage2[0], timeStage2[1]));
 	stage2.push_back(Wire(aluControl.output0, alu.input2, timeStage2[0], timeStage2[1]));
+	stage2.push_back(Wire(signExtend.output0, shiftLeftTwo.input0, timeStage2[0], timeStage2[1]));
+
+	vector<Wire> stage3;
+	stage3.push_back(Wire(controlUnit.output0, andGate.input0, timeStage1[0], timeStage3[1]));
+	stage3.push_back(Wire(alu.output0, andGate.input1, timeStage3[0], timeStage3[1]));
+	stage3.push_back(Wire(shiftLeftTwo.output0, aluAdd.input0, timeStage3[0], timeStage3[1]));
+	stage3.push_back(Wire(add4.output0, aluAdd.input1, timeStage3[0], timeStage3[1]));
+
+
 
 	wireStages.push_back(stage0);
 	wireStages.push_back(stage1);
 	wireStages.push_back(stage2);
+	wireStages.push_back(stage3);
 
-	wireStages[0][0].attach(Bit("000100"));
-	wireStages[0][1].attach(Bit("01000"));
-	wireStages[0][2].attach(Bit("01001"));
-	wireStages[0][3].attach(Bit("0000000010010110"));
+	wireStages[0][0].attach(Bit("000100"));				// input to CU
+	wireStages[0][1].attach(Bit("01000"));  			// input to regAccess
+	wireStages[0][2].attach(Bit("01001"));  			// input to regAcces
+	wireStages[0][3].attach(Bit("0000000010010110"));	// input to SignExtend
 
-	wireStages[1][0].attach(Bit("01"));
-	wireStages[1][1].attach(Bit("01000"));
-	wireStages[1][2].attach(Bit("01001"));
-	wireStages[1][3].attach(Bit("00000000000000000000000010010110")); 
+	wireStages[1][0].attach(Bit("01"));					// CU to ALU Control
+	wireStages[1][1].attach(Bit("0"));					// CU to Mux1
+	wireStages[1][2].attach(Bit("01001"));				// RegAccess to Mux1
+
+	wireStages[2][0].attach(Bit("01000")); 								// RegAccess to ALU
+	wireStages[2][1].attach(Bit("01001")); 								// Mux1 to ALU
+	wireStages[2][2].attach(Bit("0110")); 								// ALU Control to ALU
+	wireStages[2][3].attach(Bit("00000000000000000000000010010110")); 	// SignExtend to Shift Left 2
+
+	wireStages[3][0].attach(Bit("1"));									// CU to AND
+	wireStages[3][1].attach(Bit("1"));									// ALU to AND
+	wireStages[3][2].attach(Bit("00000000000000000000001001011000"));	// Shift Left 2 to aluAdd
+
 }
 
 void resize(int w, int h) {
