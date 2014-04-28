@@ -249,7 +249,9 @@ void init(int numArgs, char** argArray) {
 	stage0.push_back(Wire(input.output3, signExtend.input0, timeStage0[0], timeStage0[1]));
 
 	vector<Wire> stage1;
-	stage1.push_back(Wire(controlUnit.output0, aluControl.input0, timeStage1[0], timeStage1[1]));
+	stage1.push_back(Wire(controlUnit.output0, andGate.input0, timeStage1[0], timeStage1[1]));
+	stage1.push_back(Wire(controlUnit.output1, aluControl.input0, timeStage1[0], timeStage1[1]));
+	stage1.push_back(Wire(controlUnit.output2, mux1.input2, timeStage1[0], timeStage1[1]));
 	stage1.push_back(Wire(regAccess.output0, alu.input0, timeStage1[0], timeStage1[1]));
 	stage1.push_back(Wire(regAccess.output1, mux1.input0, timeStage1[0], timeStage1[1]));
 	stage1.push_back(Wire(signExtend.output0, shiftLeftTwo.input0, timeStage1[0], timeStage1[1]));
@@ -268,10 +270,12 @@ void init(int numArgs, char** argArray) {
 	wireStages[0][2].attach(Bit("01001"));
 	wireStages[0][3].attach(Bit("0000000010010110"));
 
-	wireStages[1][0].attach(Bit("01"));
-	wireStages[1][1].attach(Bit("01000"));
-	wireStages[1][2].attach(Bit("01001"));
-	wireStages[1][3].attach(Bit("00000000000000000000000010010110")); 
+	wireStages[1][0].attach(Bit("1"));
+	wireStages[1][1].attach(Bit("0"));
+	wireStages[1][2].attach(Bit("01"));
+	wireStages[1][3].attach(Bit("01000"));
+	wireStages[1][4].attach(Bit("01001"));
+	wireStages[1][5].attach(Bit("00000000000000000000000010010110")); 
 }
 
 void resize(int w, int h) {
