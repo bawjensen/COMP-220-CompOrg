@@ -204,8 +204,8 @@ public:
 	Coord3f output0;
 
 	void initialize() {
-		input0 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
-		input1 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+		input0 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+		input1 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
 
 		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
 	};
@@ -257,14 +257,14 @@ public:
 class AndGate : public Component {
 private:
 public:
-	Coord3f input0;
-	Coord3f output0, output1;
+	Coord3f input0, input1;
+	Coord3f output0;
 
 	void initialize() {
-		input0 = this->position - Coord3f(0, 0, this->scale.z / 2);
+		input0 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+		input1 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
 
-		output0 = this->position + Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
-		output1 = this->position + Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
 	};
 };
 
