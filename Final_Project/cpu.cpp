@@ -120,7 +120,7 @@ void init(int numArgs, char** argArray) {
 	controlUnit.scale.x = 200;
 	controlUnit.scale.y = 10;
 	controlUnit.scale.z = 100;
-	// controlUnit.initialize();
+	controlUnit.initialize();
 
 	regAccess.label = "Registers";
 	regAccess.isOval = false;
@@ -140,6 +140,7 @@ void init(int numArgs, char** argArray) {
 	signExtend.scale.x = 100;
 	signExtend.scale.y = 10;
 	signExtend.scale.z = 50;
+	signExtend.initialize();
 
 	aluControl.label = "ALU Control";
 	aluControl.isOval = true;
@@ -149,6 +150,7 @@ void init(int numArgs, char** argArray) {
 	aluControl.scale.x = 100;
 	aluControl.scale.y = 10;
 	aluControl.scale.z = 50;
+	aluControl.initialize();
 
 	alu.label = "ALU";
 	alu.isOval = false;
@@ -158,6 +160,7 @@ void init(int numArgs, char** argArray) {
 	alu.scale.x = 400;
 	alu.scale.y = 10;
 	alu.scale.z = 200;
+	alu.initialize();
 
 	shiftLeftTwo.label = "Shift-Left 2";
 	shiftLeftTwo.isOval = true;
@@ -167,6 +170,7 @@ void init(int numArgs, char** argArray) {
 	shiftLeftTwo.scale.x = 100;
 	shiftLeftTwo.scale.y = 10;
 	shiftLeftTwo.scale.z = 50;
+	shiftLeftTwo.initialize();
 
 	aluAdd.label = "Add";
 	aluAdd.isOval = false;
@@ -176,6 +180,7 @@ void init(int numArgs, char** argArray) {
 	aluAdd.scale.x = 200;
 	aluAdd.scale.y = 10;
 	aluAdd.scale.z = 100;
+	aluAdd.initialize();
 
 	mux1.label = "Mux #1";
 	mux1.isOval = true;
@@ -185,6 +190,7 @@ void init(int numArgs, char** argArray) {
 	mux1.scale.x = 150;
 	mux1.scale.y = 10;
 	mux1.scale.z = 30;
+	mux1.initialize();
 
 	mux2.label = "Mux #2";
 	mux2.isOval = true;
@@ -194,6 +200,7 @@ void init(int numArgs, char** argArray) {
 	mux2.scale.x = 150;
 	mux2.scale.y = 10;
 	mux2.scale.z = 30;
+	mux2.initialize();
 
 	programControl.label = "PC";
 	programControl.isOval = false;
@@ -203,6 +210,7 @@ void init(int numArgs, char** argArray) {
 	programControl.scale.x = 200;
 	programControl.scale.y = 10;
 	programControl.scale.z = 100;
+	programControl.initialize();
 
 	andGate.label = "AND";
 	andGate.isAND = true; // Note: Not oval, it's an AND gate
@@ -212,6 +220,7 @@ void init(int numArgs, char** argArray) {
 	andGate.scale.x = 100;
 	andGate.scale.y = 10;
 	andGate.scale.z = 50;
+	andGate.initialize();
 
 	add4.label = "Increment";
 	add4.isOval = false;
@@ -221,6 +230,7 @@ void init(int numArgs, char** argArray) {
 	add4.scale.x = 250;
 	add4.scale.y = 10;
 	add4.scale.z = 150;
+	add4.initialize();
 
 	input.label = "Input";
 	input.isOval = false;
@@ -230,9 +240,10 @@ void init(int numArgs, char** argArray) {
 	input.scale.x = 250;
 	input.scale.y = 10;
 	input.scale.z = 150;
+	input.initialize();
 
 	vector<Wire> stage0;
-	stage0.push_back(Wire(input.position, controlUnit.position, timeStage0[0], timeStage0[1]));
+	stage0.push_back(Wire(input.output0, controlUnit.input0, timeStage0[0], timeStage0[1]));
 	stage0.push_back(Wire(input.position, regAccess.input0, timeStage0[0], timeStage0[1]));
 	stage0.push_back(Wire(input.position, regAccess.input1, timeStage0[0], timeStage0[1]));
 	stage0.push_back(Wire(input.position, signExtend.position, timeStage0[0], timeStage0[1]));

@@ -118,6 +118,14 @@ private:
 public:
 	Coord3f input0;
 	Coord3f output0, output1, output2;
+
+	void initialize() {
+		input0 = this->position - Coord3f(0, 0, this->scale.z / 2);
+
+		output0 = this->position + Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
+		output1 = this->position + Coord3f(0, 0, this->scale.z / 2);
+		output2 = this->position + Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+	};
 };
 
 class RegAccess : public Component {
@@ -280,10 +288,10 @@ public:
 	Coord3f output0, output1, output2, output3;
 
 	void initialize() {
-		output0 = this->position + Coord3f(this->scale.x * 2 / 3, 0, this->scale.z / 2);
-		output1 = this->position + Coord3f(this->scale.x * 1 / 3, 0, this->scale.z / 2);
-		output2 = this->position + Coord3f(-this->scale.x * 1 / 3, 0, this->scale.z / 2);
-		output3 = this->position + Coord3f(-this->scale.x * 2 / 3, 0, this->scale.z / 2);
+		output0 = this->position + Coord3f(this->scale.x * 2 / 6, 0, this->scale.z / 2);
+		output1 = this->position + Coord3f(this->scale.x * 1 / 6, 0, this->scale.z / 2);
+		output2 = this->position + Coord3f(-this->scale.x * 1 / 6, 0, this->scale.z / 2);
+		output3 = this->position + Coord3f(-this->scale.x * 2 / 6, 0, this->scale.z / 2);
 	};
 };
 
