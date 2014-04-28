@@ -155,11 +155,6 @@ Bit::Bit(Coord3f startPosition) {
 	this->hostWire = NULL;
 }
 
-void Bit::update() {
-	if (this->isMoving)
-		this->position += this->direction;
-}
-
 void Bit::display() {
 	glPushMatrix();
 	glTranslatef(this->position.x, this->position.y, this->position.z);
@@ -185,18 +180,21 @@ void Bit::display() {
 
 Wire::Wire() {
 	this->hasBit = false;
+	this->showBit = false;
 }
 
 Wire::Wire(const Coord3f& start, const Coord3f& end) {
 	this->points.push_back(start);
 	this->points.push_back(end);
 	this->hasBit = false;
+	this->showBit = false;
 }
 
 Wire::Wire(const Coord3f& start, const Coord3f& end, int startTime, int endTime) {
 	this->points.push_back(start);
 	this->points.push_back(end);
 	this->hasBit = false;
+	this->showBit = false;
 	this->sTime = startTime;
 	this->eTime = endTime;
 }
@@ -211,8 +209,7 @@ void Wire::display() {
 
 	glEnd();
 
-	if (this->hasBit) {
-		this->bit.update();
+	if (this->hasBit and this->showBit) {
 		this->bit.display();
 	}
 }
@@ -225,6 +222,9 @@ void Wire::attach(Bit newBit) {
 }
 
 void Wire::animate(int t) {
+	if ( !(t > this->sTime and t < this->eTime) ) this->showBit = false;
+	else this->showBit = true;
+
 	if (this->hasBit) {
 		if (t > this->sTime and t < this->eTime) {
 			Coord3f path = this->points[1] - this->points[0];
@@ -236,9 +236,6 @@ void Wire::animate(int t) {
 			cout << "Percentage complete: " << timeScalar << endl;
 
 			this->bit.position = path * timeScalar + this->points[0];
-		}
-		else if (t >= this->eTime) {
-			this->hasBit = false;
 		}
 	}
 }

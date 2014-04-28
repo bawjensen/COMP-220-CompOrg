@@ -77,7 +77,6 @@ public:
 	Bit(string);
 	Bit(Coord3f);
 
-	void update();
 	void display();
 };
 
@@ -86,7 +85,7 @@ private:
 public:
 	vector<Coord3f> points;
 	Bit bit;
-	bool hasBit;
+	bool hasBit, showBit;
 	int sTime, eTime;
 
 	Wire();
@@ -141,6 +140,12 @@ private:
 public:
 	Coord3f input0;
 	Coord3f output0;
+
+	void initialize() {
+		input0 = this->position - Coord3f(0, 0, this->scale.z / 2);
+
+		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
+	};
 };
 
 class ALUControl : public Component {
@@ -148,6 +153,12 @@ private:
 public:
 	Coord3f input0;
 	Coord3f output0;
+
+	void initialize() {
+		input0 = this->position - Coord3f(0, 0, this->scale.z / 2);
+
+		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
+	};
 };
 
 class ALU : public Component {
@@ -155,6 +166,14 @@ private:
 public:
 	Coord3f input0, input1, input2;
 	Coord3f output0;
+
+	void initialize() {
+		input0 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
+		input1 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+		input2 = this->position - Coord3f(0, this->scale.y / 2, 0);
+
+		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
+	};
 };
 
 class ShiftLeftTwo : public Component {
@@ -162,6 +181,12 @@ private:
 public:
 	Coord3f input0;
 	Coord3f output0;
+
+	void initialize() {
+		input0 = this->position - Coord3f(0, 0, this->scale.z / 2);
+
+		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
+	};
 };
 
 class ALUAdd : public Component {
@@ -169,6 +194,13 @@ private:
 public:
 	Coord3f input0, input1;
 	Coord3f output0;
+
+	void initialize() {
+		input0 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
+		input1 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+
+		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
+	};
 };
 
 class Multiplexer1 : public Component {
@@ -176,6 +208,14 @@ private:
 public:
 	Coord3f input0, input1, input2;
 	Coord3f output0;
+
+	void initialize() {
+		input0 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
+		input1 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+		input2 = this->position - Coord3f(0, this->scale.y / 2, 0);
+
+		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
+	};
 };
 
 class Multiplexer2 : public Component {
@@ -183,6 +223,14 @@ private:
 public:
 	Coord3f input0, input1, input2;
 	Coord3f output0;
+
+	void initialize() {
+		input0 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
+		input1 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+		input2 = this->position - Coord3f(0, this->scale.y / 2, 0);
+
+		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
+	};
 };
 
 class ProgramControl : public Component {
@@ -190,6 +238,12 @@ private:
 public:
 	Coord3f input0;
 	Coord3f output0;
+
+	void initialize() {
+		input0 = this->position - Coord3f(0, 0, this->scale.z / 2);
+
+		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
+	};
 };
 
 class AndGate : public Component {
@@ -197,19 +251,40 @@ private:
 public:
 	Coord3f input0;
 	Coord3f output0, output1;
+
+	void initialize() {
+		input0 = this->position - Coord3f(0, 0, this->scale.z / 2);
+
+		output0 = this->position + Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
+		output1 = this->position + Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+	};
 };
 
 class Add4 : public Component {
 private:
 public:
 	Coord3f input0, input1;
-	Coord3f output0, output1, output2;
+	Coord3f output0;
+
+	void initialize() {
+		input0 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
+		input1 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+
+		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
+	};
 };
 
 class Input : public Component {
 private:
 public:
 	Coord3f output0, output1, output2, output3;
+
+	void initialize() {
+		output0 = this->position + Coord3f(this->scale.x * 2 / 3, 0, this->scale.z / 2);
+		output1 = this->position + Coord3f(this->scale.x * 1 / 3, 0, this->scale.z / 2);
+		output2 = this->position + Coord3f(-this->scale.x * 1 / 3, 0, this->scale.z / 2);
+		output3 = this->position + Coord3f(-this->scale.x * 2 / 3, 0, this->scale.z / 2);
+	};
 };
 
 class CPU {
