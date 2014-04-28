@@ -127,6 +127,13 @@ public:
 	Coord3f input0, input1;
 	Coord3f output0, output1;
 
+	void initialize() {
+		input0 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+		input1 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
+
+		output0 = this->position + Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
+		output1 = this->position + Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+	};
 };
 
 class SignExtend : public Component {
@@ -134,7 +141,6 @@ private:
 public:
 	Coord3f input0;
 	Coord3f output0;
-
 };
 
 class ALUControl : public Component {
@@ -142,7 +148,6 @@ private:
 public:
 	Coord3f input0;
 	Coord3f output0;
-
 };
 
 class ALU : public Component {
@@ -150,7 +155,6 @@ private:
 public:
 	Coord3f input0, input1, input2;
 	Coord3f output0;
-
 };
 
 class ShiftLeftTwo : public Component {
@@ -158,7 +162,6 @@ private:
 public:
 	Coord3f input0;
 	Coord3f output0;
-
 };
 
 class ALUAdd : public Component {
@@ -166,55 +169,47 @@ private:
 public:
 	Coord3f input0, input1;
 	Coord3f output0;
-
 };
 
 class Multiplexer1 : public Component {
 private:
 public:
-	Coord3f input0;
-	Coord3f output0, output1, output2;
-
+	Coord3f input0, input1, input2;
+	Coord3f output0;
 };
 
 class Multiplexer2 : public Component {
 private:
 public:
-	Coord3f input0;
-	Coord3f output0, output1, output2;
-
+	Coord3f input0, input1, input2;
+	Coord3f output0;
 };
 
 class ProgramControl : public Component {
 private:
 public:
 	Coord3f input0;
-	Coord3f output0, output1, output2;
-
+	Coord3f output0;
 };
 
 class AndGate : public Component {
 private:
 public:
 	Coord3f input0;
-	Coord3f output0, output1, output2;
-
+	Coord3f output0, output1;
 };
 
 class Add4 : public Component {
 private:
 public:
-	Coord3f input0;
+	Coord3f input0, input1;
 	Coord3f output0, output1, output2;
-
 };
 
 class Input : public Component {
 private:
 public:
-	Coord3f input0;
-	Coord3f output0, output1, output2;
-
+	Coord3f output0, output1, output2, output3;
 };
 
 class CPU {
