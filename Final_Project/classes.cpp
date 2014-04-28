@@ -237,9 +237,9 @@ void Wire::animate(int t) {
 
 			this->bit.position = path * timeScalar + this->points[0];
 		}
-		// else {
-			// this->bit.position = 
-		// }
+		else if (t >= this->eTime) {
+			this->hasBit = false;
+		}
 	}
 }
 
