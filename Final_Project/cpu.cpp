@@ -56,8 +56,8 @@ clock_t animationStart;
 float animationSpeed = 0.00025;
 
 int timeStage0[2] = { 0, 1000 };
-int timeStage1[2] = { 1500, 2500 };
-int timeStage2[2] = { 3000, 4000 };
+int timeStage1[2] = { 1000, 2000 };
+int timeStage2[2] = { 2000, 3000 };
 
 // -------------------------------------------------------------------------------------------
 
@@ -144,9 +144,9 @@ void init(int numArgs, char** argArray) {
 
 	aluControl.label = "ALU Control";
 	aluControl.isOval = true;
-	aluControl.position.x = 250;
+	aluControl.position.x = 350;
 	aluControl.position.y = 0;
-	aluControl.position.z = 50;
+	aluControl.position.z = 250;
 	aluControl.scale.x = 100;
 	aluControl.scale.y = 10;
 	aluControl.scale.z = 50;
@@ -255,9 +255,8 @@ void init(int numArgs, char** argArray) {
 	stage1.push_back(Wire(signExtend.output0, shiftLeftTwo.input0, timeStage1[0], timeStage1[1]));
 
 	vector<Wire> stage2;
-	// stage2.push_back(Wire(regAccess.position, alu.position, timeStage2[0], timeStage2[1]));
-	stage2.push_back(Wire(mux1.output0, alu.position, timeStage2[0], timeStage2[1]));
-	stage2.push_back(Wire(aluControl.output0, alu.position, timeStage2[0], timeStage2[1]));
+	stage2.push_back(Wire(mux1.output0, alu.input1, timeStage2[0], timeStage2[1]));
+	stage2.push_back(Wire(aluControl.output0, alu.input2, timeStage2[0], timeStage2[1]));
 
 	wireStages.push_back(stage0);
 	wireStages.push_back(stage1);
