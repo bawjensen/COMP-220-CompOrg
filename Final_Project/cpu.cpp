@@ -268,9 +268,10 @@ void init(int numArgs, char** argArray) {
 	wireStages[0][2].attach(Bit("01001"));
 	wireStages[0][3].attach(Bit("0000000010010110"));
 
-	// wireStages[1][0].attach(Bit("000100"));
-	// wireStages[1][1].attach(Bit("01000"));
-	// wireStages[1][2].attach(Bit("01001"));
+	wireStages[1][0].attach(Bit("01"));
+	wireStages[1][1].attach(Bit("01000"));
+	wireStages[1][2].attach(Bit("01001"));
+	wireStages[1][3].attach(Bit("00000000000000000000000010010110"));
 }
 
 void resize(int w, int h) {
