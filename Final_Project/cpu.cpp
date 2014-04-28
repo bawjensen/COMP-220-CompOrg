@@ -244,20 +244,20 @@ void init(int numArgs, char** argArray) {
 
 	vector<Wire> stage0;
 	stage0.push_back(Wire(input.output0, controlUnit.input0, timeStage0[0], timeStage0[1]));
-	stage0.push_back(Wire(input.position, regAccess.input0, timeStage0[0], timeStage0[1]));
-	stage0.push_back(Wire(input.position, regAccess.input1, timeStage0[0], timeStage0[1]));
-	stage0.push_back(Wire(input.position, signExtend.position, timeStage0[0], timeStage0[1]));
+	stage0.push_back(Wire(input.output1, regAccess.input0, timeStage0[0], timeStage0[1]));
+	stage0.push_back(Wire(input.output2, regAccess.input1, timeStage0[0], timeStage0[1]));
+	stage0.push_back(Wire(input.output3, signExtend.input0, timeStage0[0], timeStage0[1]));
 
 	vector<Wire> stage1;
-	stage1.push_back(Wire(controlUnit.position, aluControl.position, timeStage1[0], timeStage1[1]));
-	stage1.push_back(Wire(regAccess.output0, alu.position, timeStage1[0], timeStage1[1]));
-	stage1.push_back(Wire(regAccess.output1, mux1.position, timeStage1[0], timeStage1[1]));
-	stage1.push_back(Wire(signExtend.position, shiftLeftTwo.position, timeStage1[0], timeStage1[1]));
+	stage1.push_back(Wire(controlUnit.output0, aluControl.input0, timeStage1[0], timeStage1[1]));
+	stage1.push_back(Wire(regAccess.output0, alu.input0, timeStage1[0], timeStage1[1]));
+	stage1.push_back(Wire(regAccess.output1, mux1.input0, timeStage1[0], timeStage1[1]));
+	stage1.push_back(Wire(signExtend.output0, shiftLeftTwo.input0, timeStage1[0], timeStage1[1]));
 
 	vector<Wire> stage2;
 	// stage2.push_back(Wire(regAccess.position, alu.position, timeStage2[0], timeStage2[1]));
-	stage2.push_back(Wire(mux1.position, alu.position, timeStage2[0], timeStage2[1]));
-	stage2.push_back(Wire(aluControl.position, alu.position, timeStage2[0], timeStage2[1]));
+	stage2.push_back(Wire(mux1.output0, alu.position, timeStage2[0], timeStage2[1]));
+	stage2.push_back(Wire(aluControl.output0, alu.position, timeStage2[0], timeStage2[1]));
 
 	wireStages.push_back(stage0);
 	wireStages.push_back(stage1);
@@ -271,7 +271,7 @@ void init(int numArgs, char** argArray) {
 	wireStages[1][0].attach(Bit("01"));
 	wireStages[1][1].attach(Bit("01000"));
 	wireStages[1][2].attach(Bit("01001"));
-	wireStages[1][3].attach(Bit("00000000000000000000000010010110"));
+	wireStages[1][3].attach(Bit("00000000000000000000000010010110")); 
 }
 
 void resize(int w, int h) {
