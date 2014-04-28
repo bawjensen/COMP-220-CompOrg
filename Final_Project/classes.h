@@ -220,7 +220,7 @@ public:
 	void initialize() {
 		input0 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
 		input1 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
-		input2 = this->position - Coord3f(0, this->scale.y / 2, 0);
+		input2 = this->position - Coord3f(-this->scale.x / 2, 0, 0);
 
 		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
 	};
