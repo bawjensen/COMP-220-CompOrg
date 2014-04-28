@@ -71,8 +71,10 @@ public:
 	Coord3f position;
 	Coord3f direction;
 	int stage;
+	string bitString;
 
 	Bit();
+	Bit(string);
 	Bit(Coord3f);
 
 	void update();
@@ -85,12 +87,15 @@ public:
 	vector<Coord3f> points;
 	Bit bit;
 	bool hasBit;
+	int sTime, eTime;
 
 	Wire();
 	Wire(const Coord3f&, const Coord3f&);
+	Wire(const Coord3f&, const Coord3f&, int startTime, int endTime);
 
 	void display();
 	void attach(Bit);
+	void animate(int);
 };
 
 class Component {
@@ -109,31 +114,108 @@ public:
 	void display();
 };
 
-class ControlUnit : public Component {};
+class ControlUnit : public Component {
+private:
+public:
+	Coord3f input0;
+	Coord3f output0, output1, output2;
+};
 
-class RegAccess : public Component {};
+class RegAccess : public Component {
+private:
+public:
+	Coord3f input0, input1;
+	Coord3f output0, output1;
 
-class SignExtend : public Component {};
+};
 
-class ALUControl : public Component {};
+class SignExtend : public Component {
+private:
+public:
+	Coord3f input0;
+	Coord3f output0;
 
-class ALU : public Component {};
+};
 
-class ShiftLeftTwo : public Component {};
+class ALUControl : public Component {
+private:
+public:
+	Coord3f input0;
+	Coord3f output0;
 
-class ALUAdd : public Component {};
+};
 
-class Multiplexer1 : public Component {};
+class ALU : public Component {
+private:
+public:
+	Coord3f input0, input1, input2;
+	Coord3f output0;
 
-class Multiplexer2 : public Component {};
+};
 
-class ProgramControl : public Component {};
+class ShiftLeftTwo : public Component {
+private:
+public:
+	Coord3f input0;
+	Coord3f output0;
 
-class AndGate : public Component {};
+};
 
-class Add4 : public Component {};
+class ALUAdd : public Component {
+private:
+public:
+	Coord3f input0, input1;
+	Coord3f output0;
 
-class Input : public Component {};
+};
+
+class Multiplexer1 : public Component {
+private:
+public:
+	Coord3f input0;
+	Coord3f output0, output1, output2;
+
+};
+
+class Multiplexer2 : public Component {
+private:
+public:
+	Coord3f input0;
+	Coord3f output0, output1, output2;
+
+};
+
+class ProgramControl : public Component {
+private:
+public:
+	Coord3f input0;
+	Coord3f output0, output1, output2;
+
+};
+
+class AndGate : public Component {
+private:
+public:
+	Coord3f input0;
+	Coord3f output0, output1, output2;
+
+};
+
+class Add4 : public Component {
+private:
+public:
+	Coord3f input0;
+	Coord3f output0, output1, output2;
+
+};
+
+class Input : public Component {
+private:
+public:
+	Coord3f input0;
+	Coord3f output0, output1, output2;
+
+};
 
 class CPU {
 private:

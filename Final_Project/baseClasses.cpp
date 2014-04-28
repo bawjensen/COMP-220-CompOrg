@@ -42,6 +42,10 @@ Coord3f Coord3f::operator+(const Coord3f& other) const {
 	return Coord3f(this->x + other.x, this->y + other.y, this->z + other.z);
 }
 
+Coord3f Coord3f::operator-(const Coord3f& other) const {
+	return Coord3f(this->x - other.x, this->y - other.y, this->z - other.z);
+}
+
 Coord3f& Coord3f::operator+=(const Coord3f& other) {
 	this->x += other.x;
 	this->y += other.y;
@@ -51,6 +55,10 @@ Coord3f& Coord3f::operator+=(const Coord3f& other) {
 
 Coord3f Coord3f::operator/(float divisor) const {
 	return Coord3f(this->x / divisor, this->y / divisor, this->z / divisor);
+}
+
+Coord3f Coord3f::operator*(float scalar) const {
+	return Coord3f(this->x * scalar, this->y * scalar, this->z * scalar);
 }
 
 ostream& operator<<(ostream& co, const Coord3f& point) {

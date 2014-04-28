@@ -135,6 +135,16 @@ Bit::Bit() {
 	this->direction = Coord3f(0, 0, 0);
 	this->stage = 0;
 	this->hostWire = NULL;
+	this->bitString = "";
+}
+
+Bit::Bit(string str) {
+	this->isMoving = false;
+	this->position = Coord3f(0, 0, 0);
+	this->direction = Coord3f(0, 0, 0);
+	this->stage = 0;
+	this->hostWire = NULL;
+	this->bitString = str;
 }
 
 Bit::Bit(Coord3f startPosition) {
@@ -153,7 +163,21 @@ void Bit::update() {
 void Bit::display() {
 	glPushMatrix();
 	glTranslatef(this->position.x, this->position.y, this->position.z);
-	glutSolidSphere(4.0, 20, 20);
+	if (this->bitString == "") {
+		glutSolidSphere(10.0, 20, 20);
+	}
+	else {
+		float characterSize = 104.76;
+		float scale = 0.25;
+		glColor3f(0, 1, 0);
+		glTranslatef(0, 12, this->bitString.length() * -characterSize / 2 * scale);
+		glRotatef(-90, 0, 1, 0);
+		glRotatef(-90, 1, 0, 0);
+		glScalef(scale, scale, scale);
+		for (int i = 0; i < this->bitString.length(); i++) {
+			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, this->bitString[i]);
+		}
+	}
 	glPopMatrix();
 }
 
@@ -167,6 +191,14 @@ Wire::Wire(const Coord3f& start, const Coord3f& end) {
 	this->points.push_back(start);
 	this->points.push_back(end);
 	this->hasBit = false;
+}
+
+Wire::Wire(const Coord3f& start, const Coord3f& end, int startTime, int endTime) {
+	this->points.push_back(start);
+	this->points.push_back(end);
+	this->hasBit = false;
+	this->sTime = startTime;
+	this->eTime = endTime;
 }
 
 void Wire::display() {
@@ -188,19 +220,41 @@ void Wire::display() {
 void Wire::attach(Bit newBit) {
 	this->bit = newBit;
 	this->bit.hostWire = this;
+	bit.position = this->points[0];
 	this->hasBit = true;
+}
+
+void Wire::animate(int t) {
+	if (this->hasBit) {
+		if (t > this->sTime and t < this->eTime) {
+			Coord3f path = this->points[1] - this->points[0];
+
+			int animationElapsed = t - this->sTime;
+
+			float timeScalar = (float)animationElapsed / (this->eTime - this->sTime);
+
+			cout << "Percentage complete: " << timeScalar << endl;
+
+			this->bit.position = path * timeScalar + this->points[0];
+		}
+		// else {
+			// this->bit.position = 
+		// }
+	}
 }
 
 // -------------------------------------------------------------------------------------------
 
 void Component::display() {
+	float characterSize = 104.76;
+
 	glPushMatrix();
 
 	glTranslatef(position.x, position.y, position.z);
 
 	glPushMatrix();
 	glColor3f(1, 0, 0);
-	glTranslatef(0, 12, label.length() * -104.76 / 2 * .25);
+	glTranslatef(0, 12, label.length() * -characterSize / 2 * .25);
 	glRotatef(-90, 0, 1, 0);
 	glRotatef(-90, 1, 0, 0);
 	glScalef(0.25, 0.25, 0.25);

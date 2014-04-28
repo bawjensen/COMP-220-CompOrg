@@ -48,8 +48,16 @@ Add4 add4;
 AndGate andGate;
 Input input;
 
-int animationStage = 0;
 vector< vector<Wire> > wireStages;
+
+bool animating = false;
+int animationTime = 0;
+clock_t animationStart;
+float animationSpeed = 0.00025;
+
+int timeStage0[2] = { 0, 1000 };
+int timeStage1[2] = { 1500, 2500 };
+int timeStage2[2] = { 3000, 4000 };
 
 // -------------------------------------------------------------------------------------------
 
@@ -222,23 +230,31 @@ void init(int numArgs, char** argArray) {
 	input.scale.z = 150;
 
 	vector<Wire> stage0;
-	stage0.push_back(Wire(input.position, controlUnit.position));
-	stage0.push_back(Wire(input.position, regAccess.position));
-	stage0.push_back(Wire(input.position, signExtend.position));
+	stage0.push_back(Wire(input.position, controlUnit.position, timeStage0[0], timeStage0[1]));
+	stage0.push_back(Wire(input.position, regAccess.position, timeStage0[0], timeStage0[1]));
+	stage0.push_back(Wire(input.position, signExtend.position, timeStage0[0], timeStage0[1]));
 
 	vector<Wire> stage1;
-	stage1.push_back(Wire(controlUnit.position, aluControl.position));
-	stage1.push_back(Wire(regAccess.position, mux1.position));
-	stage1.push_back(Wire(signExtend.position, shiftLeftTwo.position));
+	stage1.push_back(Wire(controlUnit.position, aluControl.position, timeStage1[0], timeStage1[1]));
+	stage1.push_back(Wire(regAccess.position, mux1.position, timeStage1[0], timeStage1[1]));
+	stage1.push_back(Wire(signExtend.position, shiftLeftTwo.position, timeStage1[0], timeStage1[1]));
 
 	vector<Wire> stage2;
-	stage2.push_back(Wire(regAccess.position, alu.position));
-	stage2.push_back(Wire(mux1.position, alu.position));
-	stage2.push_back(Wire(aluControl.position, alu.position));
+	stage2.push_back(Wire(regAccess.position, alu.position, timeStage2[0], timeStage2[1]));
+	stage2.push_back(Wire(mux1.position, alu.position, timeStage2[0], timeStage2[1]));
+	stage2.push_back(Wire(aluControl.position, alu.position, timeStage2[0], timeStage2[1]));
 
 	wireStages.push_back(stage0);
 	wireStages.push_back(stage1);
 	wireStages.push_back(stage2);
+
+	wireStages[0][0].attach(Bit("000100"));
+	wireStages[0][1].attach(Bit("01000"));
+	wireStages[0][2].attach(Bit("01001"));
+
+	wireStages[1][0].attach(Bit("000100"));
+	wireStages[1][1].attach(Bit("01000"));
+	wireStages[1][2].attach(Bit("01001"));
 }
 
 void resize(int w, int h) {
@@ -395,7 +411,20 @@ void display() {
 void idle() {
 	clock_t endWait;
 
+	if (animating) {
+		animationTime = (clock() - animationStart) * animationSpeed;
+
+		// cout << "Current animation time: " << animationTime << endl;
+
+		for (vector< vector<Wire> >::iterator superIt = wireStages.begin(); superIt != wireStages.end(); ++superIt) {
+			for (vector<Wire>::iterator it = superIt->begin(); it != superIt->end(); ++it) {
+				it->animate(animationTime);
+			}
+		}
+	}
+
 	endWait = clock() + CLOCKS_PER_SEC / 60;
+
 	/* please wait...*/
 	while (clock() < endWait);
 
@@ -459,6 +488,10 @@ void keyDownCallback(unsigned char key, int x, int y) {
 		case '6':	cam.move(Camera::RIGHT);
 					break;
 
+
+		case 'p': 	animating = !animating;
+					if (animating) animationStart = clock() - (animationTime / animationSpeed);
+					break;
 
 
 		case 'q': 	mouseCallback(3, GLUT_DOWN, x, y);
