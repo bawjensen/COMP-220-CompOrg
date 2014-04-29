@@ -3,11 +3,14 @@
 // -------------------------------------------------------------------------------------------
 
 Camera::Camera() {
-	this->pos = Vec3f(-1000.0f, 1000.0f, 0.0f); // Camera position
+	this->pos = Vec3f(-1500.0f, 1500.0f, 0.0f); // Camera position
 	this->origViewDir = Vec3f(1.0f, 0.0f, 0.0f); // View direction
 	this->viewDir = this->origViewDir; // View direction
 	this->strafeVec = this->viewDir.rotateY(-M_PI / 2);
 	this->upVec = this->viewDir.rotateZ(-M_PI / 2);
+
+	this->vertAngle = -(M_PI / 3);
+	this->viewDir = this->origViewDir.rotateZ(-this->vertAngle);
 
 	this->isFocusing = false; // Whether or not the camera is "viewing" or "focusing"
 	this->focus = Vec3f(0.0f, 0.0f, 0.0f); // Where the camera is focusing
@@ -15,7 +18,7 @@ Camera::Camera() {
 	this->angularScrollSpeed = 1 / (float)200; // Rotation speed of the camera
 	this->panActive = false; // Whether or not the camera is panning (via the mouse)
 
-	this->moveSpeed = 5.0;
+	this->moveSpeed = 10.0;
 }
 
 void Camera::setPos(float pX, float pY, float pZ) {
@@ -97,7 +100,6 @@ void Camera::rotate(float hAngle, float vAngle) {
 
 	this->viewDir = this->origViewDir.rotateZ(-this->vertAngle).rotateY(this->horizAngle);
 	this->strafeVec = this->strafeVec.rotateY(hAngle);
-	this->upVec = this->upVec.rotateZ(vAngle);
 }
 
 void Camera::handleClick(int button, int state, int x, int y) {
@@ -138,13 +140,15 @@ Bit::Bit() {
 	this->bitString = "";
 }
 
-Bit::Bit(string str) {
+Bit::Bit(string str1, string str2, string str3) {
 	this->isMoving = false;
 	this->position = Coord3f(0, 0, 0);
 	this->direction = Coord3f(0, 0, 0);
 	this->stage = 0;
 	this->hostWire = NULL;
-	this->bitString = str;
+	this->bitString = str1;
+	this->decimalString = str2;
+	this->hybridString = str3;
 }
 
 Bit::Bit(Coord3f startPosition) {
@@ -155,22 +159,27 @@ Bit::Bit(Coord3f startPosition) {
 	this->hostWire = NULL;
 }
 
-void Bit::display() {
+void Bit::display(int mode) {
+	string stringToUse;
+	if (mode == 0) stringToUse = this->bitString;
+	else if (mode == 1) stringToUse = this->decimalString;
+	else if (mode == 2) stringToUse = this->hybridString;
+
 	glPushMatrix();
-	glTranslatef(this->position.x, this->position.y, this->position.z);
-	if (this->bitString == "") {
+	glTranslatef(this->position.x, this->position.y + 10, this->position.z);
+	if (stringToUse == "") {
 		glutSolidSphere(10.0, 20, 20);
 	}
 	else {
 		float characterSize = 104.76;
 		float scale = 0.25;
 		glColor3f(0, 1, 0);
-		glTranslatef(0, 12, this->bitString.length() * -characterSize / 2 * scale);
+		glTranslatef(0, 12, stringToUse.length() * -characterSize / 2 * scale);
 		glRotatef(-90, 0, 1, 0);
 		glRotatef(-90, 1, 0, 0);
 		glScalef(scale, scale, scale);
-		for (int i = 0; i < this->bitString.length(); i++) {
-			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, this->bitString[i]);
+		for (int i = 0; i < stringToUse.length(); i++) {
+			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, stringToUse[i]);
 		}
 	}
 	glPopMatrix();
@@ -199,9 +208,9 @@ Wire::Wire(const Coord3f& start, const Coord3f& end, int startTime, int endTime)
 	this->eTime = endTime;
 }
 
-void Wire::display() {
+void Wire::display(int mode) {
 	glBegin(GL_LINE_STRIP);
-	glColor3f(0, 1, 0);
+	glColor3f(1, 1, 1);
 
 	for (vector<Coord3f>::iterator it = this->points.begin(); it != this->points.end(); ++it) {
 		glVertex3f(it->x, it->y, it->z);
@@ -210,7 +219,7 @@ void Wire::display() {
 	glEnd();
 
 	if (this->hasBit and this->showBit) {
-		this->bit.display();
+		this->bit.display(mode);
 	}
 }
 
@@ -233,8 +242,6 @@ void Wire::animate(int t) {
 
 			float timeScalar = (float)animationElapsed / (this->eTime - this->sTime);
 
-			cout << "Percentage complete: " << timeScalar << endl;
-
 			this->bit.position = path * timeScalar + this->points[0];
 		}
 	}
@@ -250,7 +257,7 @@ void Component::display() {
 	glTranslatef(position.x, position.y, position.z);
 
 	glPushMatrix();
-	glColor3f(1, 0, 0);
+	glColor3f(1, 1, 1);
 	glTranslatef(0, 12, label.length() * -characterSize / 2 * .25);
 	glRotatef(-90, 0, 1, 0);
 	glRotatef(-90, 1, 0, 0);
@@ -260,7 +267,9 @@ void Component::display() {
 	}
 	glPopMatrix();
 
-	glColor3f(1, 1, 1);
+	// float gray = 0.3;
+	// glColor3ub(139, 69, 19); // Saddle brown
+	glColor3ub(92, 51, 23); // Chocolate
 	glScalef(scale.x, scale.y, scale.z);
 
 	if (isAND) {
@@ -285,25 +294,15 @@ void Component::display() {
 	}
 	else if (isOval) {
 		glRotatef(-90, 1, 0, 0);
-		gluDisk(gluNewQuadric(), 0, 1, 100, 1);
 		gluCylinder(gluNewQuadric(), 1, 1, 1, 100, 1);
+		glTranslatef(0, 0, 1.0);
+		gluDisk(gluNewQuadric(), 0, 1, 100, 1);
 	}
 	else {
 		glutSolidCube(1.0);
 	}
 
 	glPopMatrix();
-}
-
-// -------------------------------------------------------------------------------------------
-
-CPU::CPU() {
-}
-
-void CPU::initialize() {
-}
-
-void CPU::display() {
 }
 
 // -------------------------------------------------------------------------------------------

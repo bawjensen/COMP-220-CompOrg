@@ -71,13 +71,13 @@ public:
 	Coord3f position;
 	Coord3f direction;
 	int stage;
-	string bitString;
+	string bitString, decimalString, hybridString;
 
 	Bit();
-	Bit(string);
+	Bit(string, string, string);
 	Bit(Coord3f);
 
-	void display();
+	void display(int mode=2);
 };
 
 class Wire {
@@ -92,7 +92,7 @@ public:
 	Wire(const Coord3f&, const Coord3f&);
 	Wire(const Coord3f&, const Coord3f&, int startTime, int endTime);
 
-	void display();
+	void display(int mode=2);
 	void attach(Bit);
 	void animate(int);
 };
@@ -122,9 +122,9 @@ public:
 	void initialize() {
 		input0 = this->position - Coord3f(0, 0, this->scale.z / 2);
 
-		output0 = this->position + Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
-		output1 = this->position + Coord3f(0, 0, this->scale.z / 2);
-		output2 = this->position + Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+		output0 = this->position + Coord3f(this->scale.x / 3, 0, this->scale.z);
+		output1 = this->position + Coord3f(0, 0, this->scale.z);
+		output2 = this->position + Coord3f(-this->scale.x / 3, 0, this->scale.z);
 	};
 };
 
@@ -218,9 +218,9 @@ public:
 	Coord3f output0;
 
 	void initialize() {
-		input0 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
-		input1 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
-		input2 = this->position - Coord3f(-this->scale.x / 2, 0, 0);
+		input0 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+		input1 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
+		input2 = this->position - Coord3f(-this->scale.x, 0, 0);
 
 		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
 	};
@@ -233,9 +233,9 @@ public:
 	Coord3f output0;
 
 	void initialize() {
-		input0 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
-		input1 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
-		input2 = this->position - Coord3f(0, this->scale.y / 2, 0);
+		input0 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+		input1 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
+		input2 = this->position - Coord3f(-this->scale.x, 0, 0);
 
 		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
 	};
@@ -264,7 +264,7 @@ public:
 		input0 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
 		input1 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
 
-		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
+		output0 = this->position + Coord3f(0, 0, this->scale.z * 1.5);
 	};
 };
 
@@ -275,8 +275,7 @@ public:
 	Coord3f output0;
 
 	void initialize() {
-		input0 = this->position - Coord3f(this->scale.x / 3, 0, this->scale.z / 2);
-		input1 = this->position - Coord3f(-this->scale.x / 3, 0, this->scale.z / 2);
+		input0 = this->position - Coord3f(0, 0, this->scale.z / 2);
 
 		output0 = this->position + Coord3f(0, 0, this->scale.z / 2);
 	};
@@ -293,18 +292,6 @@ public:
 		output2 = this->position + Coord3f(-this->scale.x * 1 / 6, 0, this->scale.z / 2);
 		output3 = this->position + Coord3f(-this->scale.x * 2 / 6, 0, this->scale.z / 2);
 	};
-};
-
-class CPU {
-private:
-public:
-	int numBits;
-	vector<Wire> wires;
-
-	CPU();
-
-	void initialize();
-	void display();
 };
 
 #endif

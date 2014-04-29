@@ -48,20 +48,62 @@ Add4 add4;
 AndGate andGate;
 Input input;
 
-vector< vector<Wire> > wireStages;
+vector<Wire> wires;
 
 bool animating = false;
 int animationTime = 0;
 clock_t animationStart;
 float animationSpeed = 0.00025;
+int textMode = 0;
+
+int t0 = 4365;
+int t1 = 4365;
+
+string t0Decimal = "4365";
+string t1Decimal = "4365";
+
+string t0Binary = "00000000000000000001000100001101";
+string t1Binary = "00000000000000000001000100001101";
 
 int timeStage0[2] = { 0, 1000 };
 int timeStage1[2] = { 1000, 2000 };
 int timeStage2[2] = { 2000, 3000 };
 int timeStage3[2] = { 3000, 4000 };
+int timeStage4[2] = { 4000, 5000 };
 
 
 // -------------------------------------------------------------------------------------------
+
+string toString(int value) {
+	ostringstream convert;
+
+	convert << value;
+
+	return convert.str();
+}
+
+string toBinaryString(int value) {
+	string result = "";
+
+	cout << "Before: " << value << endl;
+	int mask;
+
+	for (int i = 31; i >= 0; i--) {
+		mask = 1 << i;
+
+		cout << i << ": " << mask << endl;
+		if (mask & value) {
+			result += '1';
+		}
+		else {
+			result += '0';
+		}
+	}
+
+	cout << "After:" << result << endl;
+
+	return result;
+}
 
 void quit() {
 	exit(1);
@@ -70,12 +112,43 @@ void quit() {
 // -------------------------------------------------------------------------------------------
 
 void userInputAndInstructions() {
+	char choice;
+	cout << "Do you wish to enter custom values for $t0 and $t1? (Y/N):";
+	cin >> choice;
+
+	if (choice == 'Y') {
+		cout << "Enter value for $t0: ";
+		cin >> t0;
+
+		cout << "Enter value for $t1: ";
+		cin >> t1;
+
+		t0Decimal = toString(t0);
+		t1Decimal = toString(t1);
+
+		t0Binary = toBinaryString(t0);
+		t1Binary = toBinaryString(t1);
+	}
 }
 
 void updateUserAttributes(bool afterGeneration) {
 }
 
+void keyDownCallback(unsigned char, int, int); // Forward declaration
+
 void menuCallback(int choice) {
+	switch(choice) {
+		case 1:	keyDownCallback('p', 0, 0);
+				break;
+		case 2: keyDownCallback('P', 0, 0);
+				break;
+		case 3:	textMode = 0;
+				break;
+		case 4:	textMode = 1;
+				break;
+		case 5:	textMode = 2;
+				break;
+	}
 }
 
 void initMenu() {
@@ -83,7 +156,12 @@ void initMenu() {
 
 	glutAddMenuEntry("Choices:", 0);
 	glutAddMenuEntry("", 0);
-	glutAddMenuEntry("Option", 1);
+	glutAddMenuEntry("Play/Pause Animation", 1);
+	glutAddMenuEntry("Restart Animation", 2);
+	glutAddMenuEntry("", 0);
+	glutAddMenuEntry("Show Binary Values", 3);
+	glutAddMenuEntry("Show Decimal Values", 4);
+	glutAddMenuEntry("Show Hybrid Values", 5);
 	glutAddMenuEntry("", 0);
 	glutAddMenuEntry("Quit", -1);
 
@@ -91,6 +169,8 @@ void initMenu() {
 }
 
 void init(int numArgs, char** argArray) {
+	initMenu();
+
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
 	glEnable(GL_DEPTH_TEST);
@@ -138,7 +218,7 @@ void init(int numArgs, char** argArray) {
 	signExtend.isOval = true;
 	signExtend.position.x = -700;
 	signExtend.position.y = 0;
-	signExtend.position.z = 0;
+	signExtend.position.z = -100;
 	signExtend.scale.x = 100;
 	signExtend.scale.y = 10;
 	signExtend.scale.z = 50;
@@ -206,7 +286,7 @@ void init(int numArgs, char** argArray) {
 
 	programControl.label = "PC";
 	programControl.isOval = false;
-	programControl.position.x = -400;
+	programControl.position.x = -700;
 	programControl.position.y = 0;
 	programControl.position.z = -850;
 	programControl.scale.x = 200;
@@ -244,54 +324,83 @@ void init(int numArgs, char** argArray) {
 	input.scale.z = 150;
 	input.initialize();
 
-	vector<Wire> stage0;
-	stage0.push_back(Wire(input.output0, controlUnit.input0, timeStage0[0], timeStage0[1]));
-	stage0.push_back(Wire(input.output1, regAccess.input0, timeStage0[0], timeStage0[1]));
-	stage0.push_back(Wire(input.output2, regAccess.input1, timeStage0[0], timeStage0[1]));
-	stage0.push_back(Wire(input.output3, signExtend.input0, timeStage0[0], timeStage0[1]));
+	// Time frame 0 - 0
+	wires.push_back(Wire(input.output0, controlUnit.input0, timeStage0[0], timeStage0[1]));
+	wires.push_back(Wire(input.output1, regAccess.input0, timeStage0[0], timeStage0[1]));
+	wires.push_back(Wire(input.output2, regAccess.input1, timeStage0[0], timeStage0[1]));
+	wires.push_back(Wire(input.output3, signExtend.input0, timeStage0[0], timeStage0[1]));
 
-	vector<Wire> stage1;
-	stage1.push_back(Wire(controlUnit.output1, aluControl.input0, timeStage1[0], timeStage1[1]));
-	stage1.push_back(Wire(controlUnit.output2, mux1.input2, timeStage1[0], timeStage1[1]));
-	stage1.push_back(Wire(regAccess.output1, mux1.input0, timeStage1[0], timeStage1[1]));
-	//stage1.push_back(Wire(signExtend.output1, mux1.input1, timeStage1[0], timeStage1[1]));
+	// Time frame 0 - 2
+	wires.push_back(Wire(programControl.output0, add4.input0, timeStage0[0], timeStage2[1]));
 
-	vector<Wire> stage2;
-	stage2.push_back(Wire(regAccess.output0, alu.input0, timeStage1[0], timeStage2[1]));
-	stage2.push_back(Wire(mux1.output0, alu.input1, timeStage2[0], timeStage2[1]));
-	stage2.push_back(Wire(aluControl.output0, alu.input2, timeStage2[0], timeStage2[1]));
-	stage2.push_back(Wire(signExtend.output0, shiftLeftTwo.input0, timeStage2[0], timeStage2[1]));
+	// Time frame 1 - 1
+	wires.push_back(Wire(controlUnit.output1, aluControl.input0, timeStage1[0], timeStage1[1]));
+	wires.push_back(Wire(controlUnit.output2, mux1.input2, timeStage1[0], timeStage1[1]));
+	wires.push_back(Wire(regAccess.output1, mux1.input0, timeStage1[0], timeStage1[1]));
+	wires.push_back(Wire(signExtend.output0, mux1.input1, timeStage1[0], timeStage1[1]));
 
-	vector<Wire> stage3;
-	stage3.push_back(Wire(controlUnit.output0, andGate.input0, timeStage1[0], timeStage3[1]));
-	stage3.push_back(Wire(alu.output0, andGate.input1, timeStage3[0], timeStage3[1]));
-	stage3.push_back(Wire(shiftLeftTwo.output0, aluAdd.input0, timeStage3[0], timeStage3[1]));
-	stage3.push_back(Wire(add4.output0, aluAdd.input1, timeStage3[0], timeStage3[1]));
+	// Time frame 1 - 2
+	wires.push_back(Wire(regAccess.output0, alu.input0, timeStage1[0], timeStage2[1]));
+	wires.push_back(Wire(signExtend.output0, shiftLeftTwo.input0, timeStage1[0], timeStage2[1]));
 
+	// Time Frame 2 - 2
+	wires.push_back(Wire(mux1.output0, alu.input1, timeStage2[0], timeStage2[1]));
+	wires.push_back(Wire(aluControl.output0, alu.input2, timeStage2[0], timeStage2[1]));
 
+	// Time Frame 1 - 3
+	wires.push_back(Wire(controlUnit.output0, andGate.input0, timeStage1[0], timeStage3[1]));
 
-	wireStages.push_back(stage0);
-	wireStages.push_back(stage1);
-	wireStages.push_back(stage2);
-	wireStages.push_back(stage3);
+	// Time Frame 3 - 3
+	wires.push_back(Wire(alu.output0, andGate.input1, timeStage3[0], timeStage3[1]));
+	wires.push_back(Wire(shiftLeftTwo.output0, aluAdd.input0, timeStage3[0], timeStage3[1]));
+	wires.push_back(Wire(add4.output0, aluAdd.input1, timeStage3[0], timeStage3[1]));
 
-	wireStages[0][0].attach(Bit("000100"));				// input to CU
-	wireStages[0][1].attach(Bit("01000"));  			// input to regAccess
-	wireStages[0][2].attach(Bit("01001"));  			// input to regAcces
-	wireStages[0][3].attach(Bit("0000000010010110"));	// input to SignExtend
+	// Time Frame 3 - 4
+	wires.push_back(Wire(add4.output0, mux2.input1, timeStage3[0], timeStage4[1]));
 
-	wireStages[1][0].attach(Bit("01"));					// CU to ALU Control
-	wireStages[1][1].attach(Bit("0"));					// CU to Mux1
-	wireStages[1][2].attach(Bit("01001"));				// RegAccess to Mux1
+	// Time Frame 4 - 4
+	wires.push_back(Wire(andGate.output0, mux2.input2, timeStage4[0], timeStage4[1]));
+	wires.push_back(Wire(aluAdd.output0, mux2.input0, timeStage4[0], timeStage4[1]));
 
-	wireStages[2][0].attach(Bit("01000")); 								// RegAccess to ALU
-	wireStages[2][1].attach(Bit("01001")); 								// Mux1 to ALU
-	wireStages[2][2].attach(Bit("0110")); 								// ALU Control to ALU
-	wireStages[2][3].attach(Bit("00000000000000000000000010010110")); 	// SignExtend to Shift Left 2
+	// Attach the bits to the wires using an iterator
+	vector<Wire>::iterator it = wires.begin();
 
-	wireStages[3][0].attach(Bit("1"));									// CU to AND
-	wireStages[3][1].attach(Bit("1"));									// ALU to AND
-	wireStages[3][2].attach(Bit("00000000000000000000001001011000"));	// Shift Left 2 to aluAdd
+	it->attach(Bit("000100", "4", "000100"));									// Input to ControlUnit
+	(++it)->attach(Bit("01000", "8", "t0"));  									// Input to RegAccess
+	(++it)->attach(Bit("01001", "9", "t1"));  									// Input to RegAccess
+	(++it)->attach(Bit("0000000010010110", "150", "150"));						// Input to SignExtend
+
+	(++it)->attach(Bit("00000000000000000001010011001000", "5320", "#1330"));	// ProgramControl to Add4
+
+	(++it)->attach(Bit("01", "1", "01"));										// ControlUnit to ALUControl
+	(++it)->attach(Bit("0", "0", "0"));											// ControlUnit to Mux1
+	(++it)->attach(Bit(t1Binary, t1Decimal, t1Decimal));						// RegAccess to Mux1
+	(++it)->attach(Bit("00000000000000000000000010010110", "150", "150")); 		// SignExtend to Mux1
+
+	(++it)->attach(Bit(t0Binary, t0Decimal, t0Decimal));						// RegAccess to ALU
+	(++it)->attach(Bit("00000000000000000000000010010110", "150", "150")); 		// SignExtend to ShiftLeft2
+
+	(++it)->attach(Bit(t1Binary, t1Decimal, t1Decimal));						// Mux1 to ALU
+	(++it)->attach(Bit("0110", "6", "0110")); 									// ALU Control to ALU
+
+	(++it)->attach(Bit("1", "1", "TRUE"));										// ControlUnit to AND
+
+	if (t0 == t1)
+		(++it)->attach(Bit("1", "1", "TRUE"));									// ALU to AND
+	else
+		(++it)->attach(Bit("0", "0", "FALSE"));									// ALU to AND
+
+	(++it)->attach(Bit("00000000000000000000001001011000", "600", "600"));		// Shift Left 2 to ALUAdd
+	(++it)->attach(Bit("00000000000000000001010011001100", "5324", "#1331"));	// Add4 to ALUAdd
+
+	(++it)->attach(Bit("00000000000000000001010011001100", "5324", "#1331"));	// Add4 to Mux2
+
+	if (t0 == t1)
+		(++it)->attach(Bit("1", "1", "1"));										// AndGate to Mux2
+	else
+		(++it)->attach(Bit("0", "0", "0"));										// AndGate to Mux2
+
+	(++it)->attach(Bit("00000000001000110101011100101000", "5924", "#1481"));	// ALUAdd to Mux2
 
 }
 
@@ -434,10 +543,8 @@ void display() {
 	andGate.display();
 	input.display();
 
-	for (vector< vector<Wire> >::iterator superIt = wireStages.begin(); superIt != wireStages.end(); ++superIt) {
-		for (vector<Wire>::iterator it = superIt->begin(); it != superIt->end(); ++it) {
-			it->display();
-		}
+	for (vector<Wire>::iterator it = wires.begin(); it != wires.end(); ++it) {
+		it->display(textMode);
 	}
 
 	glEnable(GL_LIGHTING);
@@ -454,10 +561,8 @@ void idle() {
 
 		// cout << "Current animation time: " << animationTime << endl;
 
-		for (vector< vector<Wire> >::iterator superIt = wireStages.begin(); superIt != wireStages.end(); ++superIt) {
-			for (vector<Wire>::iterator it = superIt->begin(); it != superIt->end(); ++it) {
-				it->animate(animationTime);
-			}
+		for (vector<Wire>::iterator it = wires.begin(); it != wires.end(); ++it) {
+			it->animate(animationTime);
 		}
 	}
 
@@ -529,6 +634,10 @@ void keyDownCallback(unsigned char key, int x, int y) {
 
 		case 'p': 	animating = !animating;
 					if (animating) animationStart = clock() - (animationTime / animationSpeed);
+					break;
+		case 'P': 	animating = true;
+					animationStart = clock();
+					animationTime = 0;
 					break;
 
 
