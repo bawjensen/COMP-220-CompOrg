@@ -54,7 +54,7 @@ bool animating = false;
 int animationTime = 0;
 clock_t animationStart;
 float animationSpeed = 0.00025;
-int textMode = 0;
+int textMode = 2;
 
 int t0 = 4365;
 int t1 = 4365;
@@ -112,7 +112,7 @@ void quit() {
 
 void userInputAndInstructions() {
 	char choice;
-	cout << "Do you wish to enter custom values for $t0 and $t1? (Y/N):";
+	cout << "Do you wish to enter custom values for $t0 and $t1? (Y/N): ";
 	cin >> choice;
 
 	if (choice == 'Y') {
@@ -174,7 +174,7 @@ void initMenu() {
 	glutAddMenuEntry("Show Hybrid Values", 5);
 	glutAddMenuEntry("", 0);
 	glutAddMenuEntry("Increase Animation Speed (2x)", 6);
-	glutAddMenuEntry("Decrease Animation Speed (1/2x)", 7);
+	glutAddMenuEntry("Decrease Animation Speed (0.5x)", 7);
 	glutAddMenuEntry("", 0);
 	glutAddMenuEntry("Quit", -1);
 
