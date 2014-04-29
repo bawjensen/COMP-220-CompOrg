@@ -53,7 +53,7 @@ vector<Wire> wires;
 bool animating = false;
 int animationTime = 0;
 clock_t animationStart;
-float animationSpeed = 0.00025;
+float animationSpeed = 0.00075;
 int textMode = 2;
 
 int t0 = 4365;
@@ -333,7 +333,7 @@ void init(int numArgs, char** argArray) {
 	input.isOval = false;
 	input.position.x = -100;
 	input.position.y = 0;
-	input.position.z = -800;
+	input.position.z = -750;
 	input.scale.x = 250;
 	input.scale.y = 10;
 	input.scale.z = 150;
@@ -343,15 +343,17 @@ void init(int numArgs, char** argArray) {
 	Coord3f wrapAround1(wrapAround0.x - 400, wrapAround0.y, wrapAround0.z);
 	Coord3f wrapAround2(programControl.input0.x - 200, wrapAround1.y, programControl.input0.z);
 
-	// Time frame 0 - 0
+	// Time frame IF - IF
 	wires.push_back(Wire(programControl.output0, input.input0, timeStageIF[0], timeStageIF[1]));
+
+	// Time frame 0 - 0
 	wires.push_back(Wire(input.output0, controlUnit.input0, timeStage0[0], timeStage0[1]));
 	wires.push_back(Wire(input.output1, regAccess.input0, timeStage0[0], timeStage0[1]));
 	wires.push_back(Wire(input.output2, regAccess.input1, timeStage0[0], timeStage0[1]));
 	wires.push_back(Wire(input.output3, signExtend.input0, timeStage0[0], timeStage0[1]));
 
-	// Time frame 0 - 2
-	wires.push_back(Wire(programControl.output0, add4.input0, timeStage0[0], timeStage2[1]));
+	// Time frame IF - 2
+	wires.push_back(Wire(programControl.output0, add4.input0, timeStageIF[0], timeStage2[1]));
 
 	// Time frame 1 - 1
 	wires.push_back(Wire(controlUnit.output1, aluControl.input0, timeStage1[0], timeStage1[1]));
