@@ -65,11 +65,13 @@ string t1Decimal = "4365";
 string t0Binary = "00000000000000000001000100001101";
 string t1Binary = "00000000000000000001000100001101";
 
-int timeStage0[2] = { 0, 1000 }; 		// Stage 1
-int timeStage1[2] = { 1000, 2000 }; 	// Stage 2
+int timeStageIF[2] = { 0, 375 }; 		// Stage IF
+int timeStage0[2] = { 375, 1250 }; 		// Stage 1
+int timeStage1[2] = { 1250, 2000 }; 	// Stage 2
 int timeStage2[2] = { 2000, 3000 }; 	// Stage 3
 int timeStage3[2] = { 3000, 4000 }; 	// Stage 4
 int timeStage4[2] = { 4000, 5000 }; 	// Stage 5
+
 int timeStage5[2] = { 5000, 5125 }; 	// Wrap Around Starts
 int timeStage6[2] = { 5125, 5500 }; 	// Stage 7
 int timeStage7[2] = { 5500, 6250 }; 	// Stage 8
@@ -328,6 +330,7 @@ void init(int numArgs, char** argArray) {
 	Coord3f wrapAround2(programControl.input0.x - 200, wrapAround1.y, programControl.input0.z);
 
 	// Time frame 0 - 0
+	wires.push_back(Wire(programControl.output0, input.input0, timeStageIF[0], timeStageIF[1]));
 	wires.push_back(Wire(input.output0, controlUnit.input0, timeStage0[0], timeStage0[1]));
 	wires.push_back(Wire(input.output1, regAccess.input0, timeStage0[0], timeStage0[1]));
 	wires.push_back(Wire(input.output2, regAccess.input1, timeStage0[0], timeStage0[1]));
@@ -381,7 +384,8 @@ void init(int numArgs, char** argArray) {
 	// Attach the bits to the wires using an iterator
 	vector<Wire>::iterator it = wires.begin();
 
-	it->attach(Bit("000100", "4", "000100"));									// Input to ControlUnit
+	it->attach(Bit("00000000000000000001010011001000", "5320", "#1330"));		// PC to Input
+	(++it)->attach(Bit("000100", "4", "000100"));								// Input to ControlUnit
 	(++it)->attach(Bit("01000", "8", "t0"));  									// Input to RegAccess
 	(++it)->attach(Bit("01001", "9", "t1"));  									// Input to RegAccess
 	(++it)->attach(Bit("0000000010010110", "150", "150"));						// Input to SignExtend

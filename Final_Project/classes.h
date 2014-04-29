@@ -245,7 +245,7 @@ class ProgramControl : public Component {
 private:
 public:
 	Coord3f input0;
-	Coord3f output0;
+	Coord3f output0, output1;
 
 	void initialize() {
 		input0 = this->position - Coord3f(this->scale.x / 2, 0, 0);
@@ -284,9 +284,12 @@ public:
 class Input : public Component {
 private:
 public:
+	Coord3f input0;
 	Coord3f output0, output1, output2, output3;
 
 	void initialize() {
+		input0 = this->position - Coord3f(0, 0, this->scale.z / 2);
+
 		output0 = this->position + Coord3f(this->scale.x * 2 / 6, 0, this->scale.z / 2);
 		output1 = this->position + Coord3f(this->scale.x * 1 / 6, 0, this->scale.z / 2);
 		output2 = this->position + Coord3f(-this->scale.x * 1 / 6, 0, this->scale.z / 2);
