@@ -65,11 +65,15 @@ string t1Decimal = "4365";
 string t0Binary = "00000000000000000001000100001101";
 string t1Binary = "00000000000000000001000100001101";
 
-int timeStage0[2] = { 0, 1000 };
-int timeStage1[2] = { 1000, 2000 };
-int timeStage2[2] = { 2000, 3000 };
-int timeStage3[2] = { 3000, 4000 };
-int timeStage4[2] = { 4000, 5000 };
+int timeStage0[2] = { 0, 1000 }; 		// Stage 1
+int timeStage1[2] = { 1000, 2000 }; 	// Stage 2
+int timeStage2[2] = { 2000, 3000 }; 	// Stage 3
+int timeStage3[2] = { 3000, 4000 }; 	// Stage 4
+int timeStage4[2] = { 4000, 5000 }; 	// Stage 5
+int timeStage5[2] = { 5000, 5125 }; 	// Wrap Around Starts
+int timeStage6[2] = { 5125, 5500 }; 	// Stage 7
+int timeStage7[2] = { 5500, 6250 }; 	// Stage 8
+int timeStage8[2] = { 6250, 6500 }; 	// Wrap Around Ends
 
 
 // -------------------------------------------------------------------------------------------
@@ -85,13 +89,10 @@ string toString(int value) {
 string toBinaryString(int value) {
 	string result = "";
 
-	cout << "Before: " << value << endl;
 	int mask;
-
 	for (int i = 31; i >= 0; i--) {
 		mask = 1 << i;
 
-		cout << i << ": " << mask << endl;
 		if (mask & value) {
 			result += '1';
 		}
@@ -99,8 +100,6 @@ string toBinaryString(int value) {
 			result += '0';
 		}
 	}
-
-	cout << "After:" << result << endl;
 
 	return result;
 }
@@ -216,7 +215,7 @@ void init(int numArgs, char** argArray) {
 
 	signExtend.label = "Sign Extend";
 	signExtend.isOval = true;
-	signExtend.position.x = -700;
+	signExtend.position.x = -600;
 	signExtend.position.y = 0;
 	signExtend.position.z = -100;
 	signExtend.scale.x = 100;
@@ -306,7 +305,7 @@ void init(int numArgs, char** argArray) {
 
 	add4.label = "Increment";
 	add4.isOval = false;
-	add4.position.x = -900;
+	add4.position.x = -825;
 	add4.position.y = 0;
 	add4.position.z = 300;
 	add4.scale.x = 250;
@@ -323,6 +322,10 @@ void init(int numArgs, char** argArray) {
 	input.scale.y = 10;
 	input.scale.z = 150;
 	input.initialize();
+
+	Coord3f wrapAround0(mux2.position.x, mux2.position.y, mux2.position.z + 100);
+	Coord3f wrapAround1(wrapAround0.x - 400, wrapAround0.y, wrapAround0.z);
+	Coord3f wrapAround2(programControl.input0.x - 200, wrapAround1.y, programControl.input0.z);
 
 	// Time frame 0 - 0
 	wires.push_back(Wire(input.output0, controlUnit.input0, timeStage0[0], timeStage0[1]));
@@ -362,6 +365,19 @@ void init(int numArgs, char** argArray) {
 	wires.push_back(Wire(andGate.output0, mux2.input2, timeStage4[0], timeStage4[1]));
 	wires.push_back(Wire(aluAdd.output0, mux2.input0, timeStage4[0], timeStage4[1]));
 
+	// Time Fram 5 - 5
+	wires.push_back(Wire(mux2.output0, wrapAround0, timeStage5[0], timeStage5[1]));
+
+	// Time Fram 6 - 6
+	wires.push_back(Wire(wrapAround0, wrapAround1, timeStage6[0], timeStage6[1]));
+
+	// Time Fram 7 - 7
+	wires.push_back(Wire(wrapAround1, wrapAround2, timeStage7[0], timeStage7[1]));
+
+	// Time Fram 8 - 8
+	wires.push_back(Wire(wrapAround2, programControl.input0, timeStage8[0], timeStage8[1]));
+
+
 	// Attach the bits to the wires using an iterator
 	vector<Wire>::iterator it = wires.begin();
 
@@ -385,22 +401,34 @@ void init(int numArgs, char** argArray) {
 
 	(++it)->attach(Bit("1", "1", "TRUE"));										// ControlUnit to AND
 
+	// ALU to AND
 	if (t0 == t1)
-		(++it)->attach(Bit("1", "1", "TRUE"));									// ALU to AND
+		(++it)->attach(Bit("1", "1", "TRUE"));
 	else
-		(++it)->attach(Bit("0", "0", "FALSE"));									// ALU to AND
-
+		(++it)->attach(Bit("0", "0", "FALSE"));
 	(++it)->attach(Bit("00000000000000000000001001011000", "600", "600"));		// Shift Left 2 to ALUAdd
 	(++it)->attach(Bit("00000000000000000001010011001100", "5324", "#1331"));	// Add4 to ALUAdd
 
 	(++it)->attach(Bit("00000000000000000001010011001100", "5324", "#1331"));	// Add4 to Mux2
-
+	// AndGate to Mux2
 	if (t0 == t1)
-		(++it)->attach(Bit("1", "1", "1"));										// AndGate to Mux2
+		(++it)->attach(Bit("1", "1", "1"));
 	else
-		(++it)->attach(Bit("0", "0", "0"));										// AndGate to Mux2
-
+		(++it)->attach(Bit("0", "0", "0"));
 	(++it)->attach(Bit("00000000001000110101011100101000", "5924", "#1481"));	// ALUAdd to Mux2
+
+	if (t0 == t1) {
+		(++it)->attach(Bit("00000000001000110101011100101000", "5924", "#1481"));	// Mux2 to WrapAround0
+		(++it)->attach(Bit("00000000001000110101011100101000", "5924", "#1481"));	// WrapAround0 to WrapAround1
+		(++it)->attach(Bit("00000000001000110101011100101000", "5924", "#1481"));	// WrapAround1 to WrapAround2
+		(++it)->attach(Bit("00000000001000110101011100101000", "5924", "#1481"));	// WrapAround2 to ProgramControl
+	}
+	else {
+		(++it)->attach(Bit("00000000000000000001010011001100", "5324", "#1331"));	// Mux2 to WrapAround0
+		(++it)->attach(Bit("00000000000000000001010011001100", "5324", "#1331"));	// WrapAround0 to WrapAround1
+		(++it)->attach(Bit("00000000000000000001010011001100", "5324", "#1331"));	// WrapAround1 to WrapAround2
+		(++it)->attach(Bit("00000000000000000001010011001100", "5324", "#1331"));	// WrapAround2 to ProgramControl
+	}
 
 }
 
@@ -568,7 +596,7 @@ void idle() {
 
 	endWait = clock() + CLOCKS_PER_SEC / 60;
 
-	/* please wait...*/
+	// Please wait...
 	while (clock() < endWait);
 
 	glutPostRedisplay();

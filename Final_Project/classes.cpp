@@ -3,13 +3,13 @@
 // -------------------------------------------------------------------------------------------
 
 Camera::Camera() {
-	this->pos = Vec3f(-1500.0f, 1500.0f, 0.0f); // Camera position
+	this->pos = Vec3f(-1600.0f, 1500.0f, 75.0f); // Camera position
 	this->origViewDir = Vec3f(1.0f, 0.0f, 0.0f); // View direction
 	this->viewDir = this->origViewDir; // View direction
 	this->strafeVec = this->viewDir.rotateY(-M_PI / 2);
 	this->upVec = this->viewDir.rotateZ(-M_PI / 2);
 
-	this->vertAngle = -(M_PI / 3);
+	this->vertAngle = -(M_PI * 2 / 7);
 	this->viewDir = this->origViewDir.rotateZ(-this->vertAngle);
 
 	this->isFocusing = false; // Whether or not the camera is "viewing" or "focusing"
