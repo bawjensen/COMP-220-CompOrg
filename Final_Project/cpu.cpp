@@ -54,7 +54,7 @@ bool animating = false;
 int animationTime = 0;
 clock_t animationStart;
 float animationSpeed = 0.00025;
-int textMode = 0;
+int textMode = 2;
 
 int t0 = 4365;
 int t1 = 4365;
@@ -114,7 +114,7 @@ void quit() {
 
 void userInputAndInstructions() {
 	char choice;
-	cout << "Do you wish to enter custom values for $t0 and $t1? (Y/N):";
+	cout << "Do you wish to enter custom values for $t0 and $t1? (Y/N): ";
 	cin >> choice;
 
 	if (choice == 'Y') {
@@ -138,6 +138,7 @@ void updateUserAttributes(bool afterGeneration) {
 void keyDownCallback(unsigned char, int, int); // Forward declaration
 
 void menuCallback(int choice) {
+	int timeElapsed;
 	switch(choice) {
 		case 1:	keyDownCallback('p', 0, 0);
 				break;
@@ -148,6 +149,16 @@ void menuCallback(int choice) {
 		case 4:	textMode = 1;
 				break;
 		case 5:	textMode = 2;
+				break;
+		case 6:	timeElapsed = clock() - animationStart;
+				timeElapsed *= 0.5;
+				animationStart = clock() - timeElapsed;
+				animationSpeed *= 2;
+				break;
+		case 7:	timeElapsed = clock() - animationStart;
+				timeElapsed *= 2;
+				animationStart = clock() - timeElapsed;
+				animationSpeed *= 0.5;
 				break;
 	}
 }
@@ -163,6 +174,9 @@ void initMenu() {
 	glutAddMenuEntry("Show Binary Values", 3);
 	glutAddMenuEntry("Show Decimal Values", 4);
 	glutAddMenuEntry("Show Hybrid Values", 5);
+	glutAddMenuEntry("", 0);
+	glutAddMenuEntry("Increase Animation Speed (2x)", 6);
+	glutAddMenuEntry("Decrease Animation Speed (0.5x)", 7);
 	glutAddMenuEntry("", 0);
 	glutAddMenuEntry("Quit", -1);
 
@@ -589,12 +603,12 @@ void idle() {
 	clock_t endWait;
 
 	if (animating) {
-		animationTime = (clock() - animationStart) * animationSpeed;
+		animationTime = (clock() - animationStart);
 
 		// cout << "Current animation time: " << animationTime << endl;
 
 		for (vector<Wire>::iterator it = wires.begin(); it != wires.end(); ++it) {
-			it->animate(animationTime);
+			it->animate(animationTime * animationSpeed);
 		}
 	}
 
@@ -665,7 +679,7 @@ void keyDownCallback(unsigned char key, int x, int y) {
 
 
 		case 'p': 	animating = !animating;
-					if (animating) animationStart = clock() - (animationTime / animationSpeed);
+					if (animating) animationStart = clock() - (animationTime);
 					break;
 		case 'P': 	animating = true;
 					animationStart = clock();
